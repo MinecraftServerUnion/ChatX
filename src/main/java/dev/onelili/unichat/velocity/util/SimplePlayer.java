@@ -21,7 +21,7 @@ public class SimplePlayer {
         return player.getUniqueId();
     }
 
-    public void sendMessage(Message message) {
+    public void sendMessage(@Nonnull Message message) {
         player.sendMessage(message.toComponent());
     }
 
@@ -29,23 +29,23 @@ public class SimplePlayer {
         throw new UnsupportedOperationException();
     }
 
-    public void kick(Message reason) {
+    public void kick(@Nonnull Message reason) {
         player.disconnect(reason.toComponent());
     }
 
-    public void sendActionBar(Message message) {
+    public void sendActionBar(@Nonnull Message message) {
         player.sendActionBar(message.toComponent());
     }
 
-    public void showBossbar(BossBar bossBar) {
+    public void showBossbar(@Nonnull BossBar bossBar) {
         player.showBossBar(bossBar);
     }
 
-    public void hideBossbar(BossBar bossBar) {
+    public void hideBossbar(@Nonnull BossBar bossBar) {
         player.hideBossBar(bossBar);
     }
 
-    public boolean hasPermission(String permission) {
+    public boolean hasPermission(@Nonnull String permission) {
         return player.hasPermission(permission);
     }
 

@@ -38,25 +38,23 @@ public class RedisChannelHandler implements ChannelHandler {
             else
                 jedis = new JedisPooled(address, port);
 
-            thread = new Thread(()-> {
-                jedis.subscribe(new JedisPubSub() {
-                    @Override
-                    public void onMessage(@Nonnull String ch, @Nonnull String messageTree) {
-                        MapTree cont = MapTree.fromJson(messageTree);
-                        Component message = MiniMessage.miniMessage().deserialize(cont.getString("msg"));
-                        String sender = cont.getString("sender");
-                        Message msg = new Message(channel.getChannelConfig().getString("format"));
-                        msg.add("player", sender);
-                        msg.add("channel", channel.getDisplayName());
-                        Component component = msg.toComponent().append(message);
-                        for (Player receiver : UniChat.getProxy().getAllPlayers()) {
-                            receiver.sendMessage(component);
-                        }
-                        if (channel.isLogToConsole())
-                            UniChat.getProxy().getConsoleCommandSource().sendMessage(component);
+            thread = new Thread(() -> jedis.subscribe(new JedisPubSub() {
+                @Override
+                public void onMessage(@Nonnull String ch, @Nonnull String messageTree) {
+                    MapTree cont = MapTree.fromJson(messageTree);
+                    Component message = MiniMessage.miniMessage().deserialize(cont.getString("msg"));
+                    String sender = cont.getString("sender");
+                    Message msg = new Message(channel.getChannelConfig().getString("format"));
+                    msg.add("player", sender);
+                    msg.add("channel", channel.getDisplayName());
+                    Component component = msg.toComponent().append(message);
+                    for (Player receiver : UniChat.getProxy().getAllPlayers()) {
+                        receiver.sendMessage(component);
                     }
-                }, "unichat-channel-" + channel.getId());
-            });
+                    if (channel.isLogToConsole())
+                        UniChat.getProxy().getConsoleCommandSource().sendMessage(component);
+                }
+            }, "unichat-channel-" + channel.getId()));
             thread.start();
         }catch (Exception e){
             Logger.error("Failed to connect to Redis server: " + e.getMessage());
@@ -66,7 +64,7 @@ public class RedisChannelHandler implements ChannelHandler {
     }
 
     @Override
-    public void destroy(){
+    public void destroy() {
         jedis.close();
         thread.interrupt();
     }
