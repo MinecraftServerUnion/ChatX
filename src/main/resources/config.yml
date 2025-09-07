@@ -15,6 +15,9 @@ channels:
     name: "&a全局"
     type: GLOBAL
     format: "&a[全局]&7[&f%player%&7] &r" # This is the prefix of the message sent to the global channel
+    # Player is not allowed in this channel when in these servers (any chat message will be blocked!)
+    restricted-servers:
+      - "server3"
     commands:
       - global
       - g

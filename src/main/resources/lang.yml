@@ -8,5 +8,9 @@ command:
   room-not-found: "&c该房间不存在!"
   invited-others: "&a成功邀请&b %player%&a 加入聊天房间!"
   invited-to-room: "&a你已被邀请加入聊天房间 &b%room_code%&a! &a&l<click:run_command:'/room %room_code%'>[点击加入]</click>"
+
 mention:
   bossbar-title: "&e&l%sender% 提到了你!"
+
+chat:
+  channel-declined: "&c在此服务器无法通过该频道发送消息! &e&l<click:run_command:'/l'>[切换至本地频道]</click>"

@@ -73,8 +73,9 @@ public class PacketEventListener extends SimplePacketListenerAbstract {
             case HELD_ITEM_CHANGE -> {
                 WrapperPlayServerHeldItemChange wrapper = new WrapperPlayServerHeldItemChange(event);
                 Player player = event.getPlayer();
-                Objects.requireNonNull(PlayerData.getPlayerDataMap().putIfAbsent(player.getUniqueId(), new PlayerData()))
+                Objects.requireNonNull(PlayerData.getPlayerDataMap().computeIfAbsent(player.getUniqueId(), uuid -> new PlayerData()))
                         .setHandItem(wrapper.getSlot());
+                listenTo(event);
             }
         }
     }
@@ -93,6 +94,7 @@ public class PacketEventListener extends SimplePacketListenerAbstract {
                 Player player = event.getPlayer();
                 Objects.requireNonNull(PlayerData.getPlayerDataMap().putIfAbsent(player.getUniqueId(), new PlayerData()))
                         .setHandItem(wrapper.getSlot());
+                listenTo(event);
             }
         }
     }

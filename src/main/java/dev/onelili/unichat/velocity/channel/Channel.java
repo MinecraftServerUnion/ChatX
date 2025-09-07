@@ -18,6 +18,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
+@SuppressWarnings("unchecked")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Getter
@@ -102,7 +103,7 @@ public class Channel {
                 List<String> commands = (List<String>) Config.getItem("channels." + i + ".commands");
                 CommandMeta meta = UniChat.getProxy().getCommandManager()
                         .metaBuilder(commands.getFirst())
-                                .aliases(commands.subList(1, commands.size()).stream().toArray(String[]::new))
+                                .aliases(commands.subList(1, commands.size()).toArray(String[]::new))
                                 .build();
                 if(Config.getString("channels." + i + ".type").toLowerCase(Locale.ROOT).equals("room")){
                     UniChat.getProxy().getCommandManager().register(meta, new SimpleCommand(){
@@ -141,7 +142,7 @@ public class Channel {
                         }
                         @Override
                         public List<String> suggest(Invocation invocation) {
-                            if (!(invocation.source() instanceof Player pl)) {
+                            if (!(invocation.source() instanceof Player)) {
                                 return new ArrayList<>();
                             }
                             if(invocation.arguments().length == 1) return List.of("invite", "create");
@@ -167,8 +168,9 @@ public class Channel {
                     });
                 }
                 if(defaultChannel == null) defaultChannel = channel;
-            }catch (Exception e) {
+            } catch (Exception e) {
                 Logger.error("Failed to load channel " + i);
+                // noinspection CallToPrintStackTrace
                 e.printStackTrace();
             }
         }

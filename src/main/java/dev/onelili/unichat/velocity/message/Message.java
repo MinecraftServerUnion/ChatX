@@ -6,7 +6,8 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public class Message {
     String content;
-    public static String replaceColorCodes(String input){
+
+    public static String replaceColorCodes(String input) {
         return input.replace("§", "&")
                 .replace("&a", "<green>")
                 .replace("&b", "<aqua>")
@@ -31,31 +32,37 @@ public class Message {
     public Message(String content) {
         this.content = replaceColorCodes(content);
     }
-    public Message add(String placeholder, Object value){
-        content = content.replace("%"+placeholder+"%", (value instanceof String)?replaceColorCodes((String)value):value.toString());
+
+    public Message add(String placeholder, Object value) {
+        content = content.replace("%" + placeholder + "%", (value instanceof String) ? replaceColorCodes((String) value) : value.toString());
         return this;
     }
-    public Message addRaw(String placeholder, Object value){
-        content = content.replace("%"+placeholder+"%", value.toString());
+
+    public Message addRaw(String placeholder, Object value) {
+        content = content.replace("%" + placeholder + "%", value.toString());
         return this;
     }
-    public String toString(){
+
+    public String toString() {
         return LegacyComponentSerializer.legacySection().serialize(MiniMessage.miniMessage().deserialize(content));
     }
-    public Component toComponent(){
+
+    public Component toComponent() {
         return MiniMessage.miniMessage().deserialize(content);
     }
-    public String toFormatted(){
+
+    public String toFormatted() {
         return MiniMessage.miniMessage().serialize(MiniMessage.miniMessage().deserialize(content));
     }
-    public boolean equals(Object obj){
-        if(obj instanceof Message){
-            return ((Message)obj).content.equals(content);
+
+    public boolean equals(Object obj) {
+        if (obj instanceof Message) {
+            return ((Message) obj).content.equals(content);
         }
         return false;
     }
 
-    public static Message getMessage(String path){
+    public static Message getMessage(String path) {
         return MessageLoader.getMessage(path);
     }
 }

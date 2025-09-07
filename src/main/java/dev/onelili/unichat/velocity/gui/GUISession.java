@@ -1,13 +1,15 @@
 package dev.onelili.unichat.velocity.gui;
 
 import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.SimplePacketListenerAbstract;
 import com.github.retrooper.packetevents.protocol.item.ItemStack;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerCloseWindow;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerOpenWindow;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWindowItems;
 import com.velocitypowered.api.proxy.Player;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.kyori.adventure.text.Component;
 
@@ -19,9 +21,10 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Accessors(chain = true, fluent = true)
-public class GUISession {
+public class GUISession extends SimplePacketListenerAbstract {
     private int windowId = new Random().nextInt();
     private int stateId = new Random().nextInt();
     private int slots = 27;
@@ -34,8 +37,11 @@ public class GUISession {
         WrapperPlayServerCloseWindow wrapper = new WrapperPlayServerCloseWindow();
         wrapper.setWindowId(windowId);
         PacketEvents.getAPI().getPlayerManager().sendPacket(player, wrapper);
+        PacketEvents.getAPI().getEventManager().unregisterListener(this);
     }
+
     public void open() {
+        PacketEvents.getAPI().getEventManager().registerListener(this);
         Component windowTitle = title == null ? Component.empty() : title;
         if(player != null && slots / 9 - 1 <= 5 || slots / 9 - 1 >= 0) {
             WrapperPlayServerOpenWindow wrapper = new WrapperPlayServerOpenWindow(
@@ -60,4 +66,5 @@ public class GUISession {
             PacketEvents.getAPI().getPlayerManager().sendPacket(player, wrapper1);
         }
     }
+
 }

@@ -19,31 +19,31 @@ public class EventListener {
     public void onPlayerChat(@Nonnull PlayerChatEvent event) {
         Channel channel;
         String message;
-        if(Channel.channelPrefixes.containsKey(event.getMessage().substring(0, 1))){
+        if (Channel.channelPrefixes.containsKey(event.getMessage().substring(0, 1))) {
             channel = Channel.channelPrefixes.get(event.getMessage().substring(0, 1));
             message = event.getMessage().substring(1);
-        }else{
+        } else {
             channel = Channel.getPlayerChannel(event.getPlayer());
             message = event.getMessage();
         }
-        if(channel == null) return;
-        if(channel.getHandler()==null){
+        if (channel == null) return;
+        if (channel.getHandler() == null) {
             Component component = new Message(channel.getChannelConfig().getString("format"))
                     .add("player", event.getPlayer().getUsername())
                     .add("channel", channel.getDisplayName())
                     .toComponent().append(PatternModule.handleMessage(event.getPlayer(), message));
-            if(channel.isLogToConsole())
+            if (channel.isLogToConsole())
                 UniChat.getProxy().getConsoleCommandSource().sendMessage(component);
-            if(event.getPlayer().getCurrentServer().isPresent()) {
+            if (event.getPlayer().getCurrentServer().isPresent()) {
                 String serverid = event.getPlayer().getCurrentServer().get().getServerInfo().getName();
-                if (channel.getChannelConfig().getStringList("force-handle-servers").contains(serverid)){
+                if (channel.getChannelConfig().getStringList("force-handle-servers").contains(serverid)) {
                     event.setResult(PlayerChatEvent.ChatResult.denied());
                     UniChat.getProxy().getScheduler()
-                            .buildTask(UniChat.instance,
+                            .buildTask(UniChat.getInstance(),
                                     () -> {
-                                        if(event.getPlayer().getCurrentServer().isPresent()) {
-                                            for (Player i : event.getPlayer().getCurrentServer().get().getServer().getPlayersConnected()){
-                                                i.sendMessage(component);
+                                        if (event.getPlayer().getCurrentServer().isPresent()) {
+                                            for (Player player : event.getPlayer().getCurrentServer().get().getServer().getPlayersConnected()) {
+                                                player.sendMessage(component);
                                             }
                                         }
                                     })
@@ -54,9 +54,17 @@ public class EventListener {
             }
             return;
         }
+        if(event.getPlayer().getCurrentServer().isPresent()){
+            String serverid = event.getPlayer().getCurrentServer().get().getServerInfo().getName();
+            if (channel.getRestrictedServers().contains(serverid)) {
+                event.setResult(PlayerChatEvent.ChatResult.denied());
+                event.getPlayer().sendMessage(Message.getMessage("chat.channel-declined").toComponent());
+                return;
+            }
+        }
         event.setResult(PlayerChatEvent.ChatResult.denied());
         UniChat.getProxy().getScheduler()
-                .buildTask(UniChat.instance,
+                .buildTask(UniChat.getInstance(),
                         () -> Channel.handleChat(event.getPlayer(), channel, message))
                 .schedule();
     }

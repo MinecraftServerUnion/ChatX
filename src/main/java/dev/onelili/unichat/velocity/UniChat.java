@@ -36,7 +36,7 @@ import java.util.UUID;
 )
 public class UniChat {
     @Getter
-    public static UniChat instance;
+    private static UniChat instance;
     @Getter
     private static ProxyServer proxy;
     @Getter
