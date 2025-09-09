@@ -13,16 +13,19 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class PatternModule {
     public static final Map<String, PatternModule> modules = new ConcurrentHashMap<>();
 
-    public abstract Component handle(Player sender);
+    public abstract Component handle(Player sender, boolean doProcess);
 
     public static void registerDefaults() {
         modules.put("item", new ShowItemModule());
         modules.put("i", new ShowItemModule());
     }
 
-    public static @Nonnull Component handleMessage(@Nonnull Player sender, @Nonnull String message) {
+    public static @Nonnull Component handleMessage(@Nonnull Player sender, @Nonnull String message, boolean doProcess) {
         StringBuilder current = new StringBuilder();
         Component result = Component.empty();
+
+        // doProcess disabled in cases such as /msg. Formats should be replaced but no events such as mentioning should be triggered
+
         outerFor: for (int i = 0; i < message.length(); i++) {
             char c = message.charAt(i);
             if(c == '@'){
@@ -37,7 +40,7 @@ public abstract class PatternModule {
                             }
                         }
                         result = result.append(Component.text(current.toString()));
-                        result = result.append(MentionModule.mention(p, sender));
+                        result = result.append(MentionModule.mention(p, sender, doProcess));
                         current = new StringBuilder();
                         i=i+p.getUsername().length();
                         continue outerFor;
@@ -50,7 +53,7 @@ public abstract class PatternModule {
             } else if(c == ']') {
                 String moduleName = current.toString();
                 if(modules.containsKey(moduleName)){
-                    result = result.append(modules.get(moduleName).handle(sender));
+                    result = result.append(modules.get(moduleName).handle(sender, doProcess));
                 }else{
                     result = result.append(Component.text("[" + moduleName + "]"));
                 }

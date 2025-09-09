@@ -26,7 +26,7 @@ public class GlobalChannelHandler implements ChannelHandler {
         Message msg = new Message(channel.getChannelConfig().getString("format"));
         msg.add("player", player.getName());
         msg.add("channel", channel.getDisplayName());
-        Component component = msg.toComponent().append(PatternModule.handleMessage(player.player, message));
+        Component component = msg.toComponent().append(PatternModule.handleMessage(player.player, message, true));
 
         for(Player receiver : UniChat.getProxy().getAllPlayers()) {
             receiver.sendMessage(component);

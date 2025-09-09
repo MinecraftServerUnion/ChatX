@@ -23,6 +23,7 @@ import java.util.function.Function;
 @Builder
 @Getter
 public class Channel {
+    @Getter
     private static Set<CommandMeta> registeredChannelCommands = new HashSet<>();
 
     public static Map<String, Channel> channelPrefixes = new ConcurrentHashMap<>();
@@ -106,6 +107,7 @@ public class Channel {
                                 .aliases(commands.subList(1, commands.size()).toArray(String[]::new))
                                 .build();
                 if(Config.getString("channels." + i + ".type").toLowerCase(Locale.ROOT).equals("room")){
+                    registeredChannelCommands.add(meta);
                     UniChat.getProxy().getCommandManager().register(meta, new SimpleCommand(){
                         @Override
                         public void execute(Invocation invocation) {
@@ -153,6 +155,7 @@ public class Channel {
                         }
                     });
                 }else {
+                    registeredChannelCommands.add(meta);
                     UniChat.getProxy().getCommandManager().register(meta, (SimpleCommand) invocation -> {
                         if (!(invocation.source() instanceof Player pl)) {
                             invocation.source().sendMessage(Message.getMessage("command.cannot-execute-from-console").toComponent());

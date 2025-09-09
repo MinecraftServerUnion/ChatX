@@ -65,8 +65,8 @@ public class RedisChannelHandler implements ChannelHandler {
 
     @Override
     public void destroy() {
-        jedis.close();
         thread.interrupt();
+        jedis.close();
     }
 
     @Override
@@ -75,7 +75,7 @@ public class RedisChannelHandler implements ChannelHandler {
         msg.add("player", player.getName());
         msg.add("channel", channel.getDisplayName());
         MapTree cont =  new MapTree()
-                .put("msg", MiniMessage.miniMessage().serialize(PatternModule.handleMessage(player.player, message)))
+                .put("msg", MiniMessage.miniMessage().serialize(PatternModule.handleMessage(player.player, message, true)))
                 .put("sender", player.getName());
         jedis.publish("unichat-channel-" + channel.getId(), cont.toJson());
     }

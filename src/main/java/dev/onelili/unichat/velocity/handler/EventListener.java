@@ -7,6 +7,7 @@ import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.proxy.Player;
 import dev.onelili.unichat.velocity.UniChat;
 import dev.onelili.unichat.velocity.channel.Channel;
+import dev.onelili.unichat.velocity.command.DirectMessageCommand;
 import dev.onelili.unichat.velocity.message.Message;
 import dev.onelili.unichat.velocity.module.PatternModule;
 import net.kyori.adventure.text.Component;
@@ -31,23 +32,22 @@ public class EventListener {
             Component component = new Message(channel.getChannelConfig().getString("format"))
                     .add("player", event.getPlayer().getUsername())
                     .add("channel", channel.getDisplayName())
-                    .toComponent().append(PatternModule.handleMessage(event.getPlayer(), message));
-            if (channel.isLogToConsole())
-                UniChat.getProxy().getConsoleCommandSource().sendMessage(component);
+                    .toComponent().append(PatternModule.handleMessage(event.getPlayer(), message, true));
+            UniChat.getProxy().getScheduler()
+                    .buildTask(UniChat.getInstance(),
+                            () -> {
+                                if (channel.isLogToConsole())
+                                    UniChat.getProxy().getConsoleCommandSource().sendMessage(component);
+                                if (event.getPlayer().getCurrentServer().isPresent()) {
+                                    for (Player player : event.getPlayer().getCurrentServer().get().getServer().getPlayersConnected()) {
+                                        player.sendMessage(component);
+                                    }
+                                }
+                            })
+                    .schedule();
             if (event.getPlayer().getCurrentServer().isPresent()) {
                 String serverid = event.getPlayer().getCurrentServer().get().getServerInfo().getName();
                 if (channel.getChannelConfig().getStringList("force-handle-servers").contains(serverid)) {
-                    event.setResult(PlayerChatEvent.ChatResult.denied());
-                    UniChat.getProxy().getScheduler()
-                            .buildTask(UniChat.getInstance(),
-                                    () -> {
-                                        if (event.getPlayer().getCurrentServer().isPresent()) {
-                                            for (Player player : event.getPlayer().getCurrentServer().get().getServer().getPlayersConnected()) {
-                                                player.sendMessage(component);
-                                            }
-                                        }
-                                    })
-                            .schedule();
                     event.setResult(PlayerChatEvent.ChatResult.denied());
                     return;
                 }
@@ -77,5 +77,6 @@ public class EventListener {
     public void onPlayerLeave(@Nonnull DisconnectEvent event){
         Channel.getPlayerChannels().remove(event.getPlayer().getUniqueId());
         PlayerData.getPlayerDataMap().remove(event.getPlayer().getUniqueId());
+        DirectMessageCommand.lastMessage.remove(event.getPlayer().getUniqueId());
     }
 }

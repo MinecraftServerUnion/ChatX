@@ -3,6 +3,12 @@ command:
   joined-channel: "&a成功加入 %channel% &a频道"
   invalid-arguments: "&c无效的参数!"
 
+  msg-usage: "&c用法: /msg <player> <message>"
+  reply-usage: "&c用法: /reply <message>"
+  player-not-found: "&c玩家&b %player%&c 不存在!"
+  msg-self: "&c不能向自己发送消息!"
+  reply-no-last-message: "&c无可回复的消息!"
+
   not-in-room: "&c你不在任何房间中! 请先使用/room create创建房间!"
   joined-room: "&a成功加入房间 &b%room_code%&a! &a其他玩家可以使用&7 /room %room_code% &a加入房间"
   room-not-found: "&c该房间不存在!"

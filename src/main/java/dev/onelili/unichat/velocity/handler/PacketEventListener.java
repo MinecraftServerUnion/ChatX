@@ -46,12 +46,12 @@ public class PacketEventListener extends SimplePacketListenerAbstract {
                             if(channel == null || channel.getHandler() != null) return;
                             if(channel.getChannelConfig().getStringList("force-handle-servers").contains(serverid)) return;
 
-                            Component component = new Message(channel.getChannelConfig().getString("format"))
-                                    .add("player", sender.getUsername())
-                                    .add("channel", channel.getDisplayName())
-                                    .toComponent().append(PatternModule.handleMessage(event.getPlayer(), messageText));
-                            Player receiver = event.getPlayer();
-                            receiver.sendMessage(component);
+//                            Component component = new Message(channel.getChannelConfig().getString("format"))
+//                                    .add("player", sender.getUsername())
+//                                    .add("channel", channel.getDisplayName())
+//                                    .toComponent().append(PatternModule.handleMessage(event.getPlayer(), messageText, true));
+//                            Player receiver = event.getPlayer();
+//                            receiver.sendMessage(component);
                             event.setCancelled(true);
                         }
                     }
@@ -70,15 +70,12 @@ public class PacketEventListener extends SimplePacketListenerAbstract {
                 Player player = event.getPlayer();
                 Objects.requireNonNull(PlayerData.getPlayerDataMap().computeIfAbsent(player.getUniqueId(), uuid -> new PlayerData()))
                         .setHandItem(wrapper.getSlot());
-                listenTo(event);
             }
             case SET_SLOT -> {
                 WrapperPlayServerSetSlot wrapper = new WrapperPlayServerSetSlot(event);
                 Player player = event.getPlayer();
                 Objects.requireNonNull(PlayerData.getPlayerDataMap().computeIfAbsent(player.getUniqueId(), uuid -> new PlayerData()))
                         .getInventory().put(wrapper.getSlot(), wrapper.getItem());
-                listenTo(event);
-                Logger.info(PlayerData.getPlayerData(player).toString());
             }
         }
     }
@@ -97,7 +94,6 @@ public class PacketEventListener extends SimplePacketListenerAbstract {
                 Player player = event.getPlayer();
                 Objects.requireNonNull(PlayerData.getPlayerDataMap().computeIfAbsent(player.getUniqueId(), uuid -> new PlayerData()))
                         .setHandItem(wrapper.getSlot());
-                listenTo(event);
             }
         }
     }

@@ -1,6 +1,8 @@
 channels:
+  # These are the channels that players can join and chat in
+  # The first one listed is the default channel when a player joins the server
   local:
-    name: "&e本地"
+    name: "本地"
     type: LOCAL
     # Messages from players in these servers will NOT be sent to the backend
     # but they will directly be handled by this plugin on the proxy level
@@ -12,21 +14,21 @@ channels:
       - local
       - l
   global:
-    name: "&a全局"
+    name: "跨服"
     type: GLOBAL
-    format: "&a[全局]&7[&f%player%&7] &r" # This is the prefix of the message sent to the global channel
+    format: "<#47BFFB>[跨服] &8[&f%player%&8]&f " # This is the prefix of the message sent to the global channel
     # Player is not allowed in this channel when in these servers (any chat message will be blocked!)
     restricted-servers:
-      - "server3"
+      - "server1"
     commands:
       - global
       - g
     prefixes:
       - "!"
   crossserver:
-    name: "&b跨服"
+    name: "世界"
     type: REDIS
-    format: "&b[跨服]&7[&f%player%&7] &r"
+    format: "<#47fbeb>[世界] &8[&f%player%&8]&f "
     redis-address: "0.0.0.0"
     redis-port:  6379
 #   redis-user: "admin"
@@ -40,10 +42,18 @@ channels:
   room:
     name: "房间"
     type: ROOM
-    format: "&c[房间 %room_code%]&7[&f%player%&7] &r"
+    format: "<#ff6600>[房间 %room_code%] &8[&f%player%&8] &f"
     commands:
       - room
 
+message: # /msg
+  format-inbound: '<#47BFFB>%name% &8→ <#47BFFB>你&8: '
+  format-outbound: '<#47BFFB>你 &8→ <#47BFFB>%name%&8: '
+  message-command:
+    - msg
+  reply-command:
+    - reply
+    - r
 
 module:
   mention:

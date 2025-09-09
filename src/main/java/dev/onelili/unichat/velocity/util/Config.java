@@ -12,7 +12,7 @@ public class Config {
     private static MapTree configTree;
 
     public static void init() {
-        if(!UniChat.getDataDirectory().exists()) UniChat.getDataDirectory().mkdir();
+        if(!UniChat.getDataDirectory().exists()) UniChat.getDataDirectory().mkdirs();
         File config = new File(UniChat.getDataDirectory(), "config.yml");
         if(!config.exists()){
             try (InputStream is = UniChat.class.getClassLoader().getResourceAsStream("config.yml"); OutputStream os = new FileOutputStream(config)) {

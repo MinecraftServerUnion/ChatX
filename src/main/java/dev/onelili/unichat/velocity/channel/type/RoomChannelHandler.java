@@ -30,7 +30,7 @@ public class RoomChannelHandler implements ChannelHandler {
             throw new ShitMountainException("Player "+player.getName()+" is not in a room but somehow called room channel!");
         Component component = new Message(channel.getChannelConfig().getString("format"))
                 .add("player", player.getName())
-                .add("room_code", rooms.get(player)).toComponent().append(PatternModule.handleMessage(player.player, message));
+                .add("room_code", rooms.get(player)).toComponent().append(PatternModule.handleMessage(player.player, message, true));
         for(SimplePlayer p : getPlayersInRoom(rooms.get(player))){
             p.player.sendMessage(component);
         }
