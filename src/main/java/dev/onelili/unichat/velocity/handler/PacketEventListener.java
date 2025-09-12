@@ -60,22 +60,22 @@ public class PacketEventListener extends SimplePacketListenerAbstract {
                 }
             }
             case PLAYER_POSITION_AND_LOOK -> {
-                WrapperPlayServerPlayerPositionAndLook wrapper = new WrapperPlayServerPlayerPositionAndLook(event);
+                WrapperPlayServerPlayerPositionAndLook packet = new WrapperPlayServerPlayerPositionAndLook(event);
                 Player player = event.getPlayer();
                 Objects.requireNonNull(PlayerData.getPlayerDataMap().computeIfAbsent(player.getUniqueId(), uuid -> new PlayerData()))
-                        .setPosition(wrapper.getPosition());
+                        .setPosition(packet.getPosition());
             }
             case HELD_ITEM_CHANGE -> {
-                WrapperPlayServerHeldItemChange wrapper = new WrapperPlayServerHeldItemChange(event);
+                WrapperPlayServerHeldItemChange packet = new WrapperPlayServerHeldItemChange(event);
                 Player player = event.getPlayer();
                 Objects.requireNonNull(PlayerData.getPlayerDataMap().computeIfAbsent(player.getUniqueId(), uuid -> new PlayerData()))
-                        .setHandItem(wrapper.getSlot());
+                        .setHandItem(packet.getSlot());
             }
             case SET_SLOT -> {
-                WrapperPlayServerSetSlot wrapper = new WrapperPlayServerSetSlot(event);
+                WrapperPlayServerSetSlot packet = new WrapperPlayServerSetSlot(event);
                 Player player = event.getPlayer();
                 Objects.requireNonNull(PlayerData.getPlayerDataMap().computeIfAbsent(player.getUniqueId(), uuid -> new PlayerData()))
-                        .getInventory().put(wrapper.getSlot(), wrapper.getItem());
+                        .getInventory().put(packet.getSlot(), packet.getItem());
             }
         }
     }
@@ -84,16 +84,16 @@ public class PacketEventListener extends SimplePacketListenerAbstract {
     public void onPacketPlayReceive(@Nonnull PacketPlayReceiveEvent event) {
         switch(event.getPacketType()) {
             case PLAYER_POSITION -> {
-                WrapperPlayClientPlayerPosition wrapper = new WrapperPlayClientPlayerPosition(event);
+                WrapperPlayClientPlayerPosition packet = new WrapperPlayClientPlayerPosition(event);
                 Player player = event.getPlayer();
                 Objects.requireNonNull(PlayerData.getPlayerDataMap().computeIfAbsent(player.getUniqueId(), uuid -> new PlayerData()))
-                        .setPosition(wrapper.getPosition());
+                        .setPosition(packet.getPosition());
             }
             case HELD_ITEM_CHANGE -> {
-                WrapperPlayClientHeldItemChange wrapper = new WrapperPlayClientHeldItemChange(event);
+                WrapperPlayClientHeldItemChange packet = new WrapperPlayClientHeldItemChange(event);
                 Player player = event.getPlayer();
                 Objects.requireNonNull(PlayerData.getPlayerDataMap().computeIfAbsent(player.getUniqueId(), uuid -> new PlayerData()))
-                        .setHandItem(wrapper.getSlot());
+                        .setHandItem(packet.getSlot());
             }
         }
     }

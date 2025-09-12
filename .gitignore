@@ -1,3 +1,4 @@
 target/
 .idea/
 unichat.iml
+/src/test/
