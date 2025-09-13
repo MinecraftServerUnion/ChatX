@@ -13,10 +13,14 @@ import lombok.Getter;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class GUIContainer extends SimplePacketListenerAbstract {
+    @Getter
+    private static final Set<Integer> states = new HashSet<>();
     @Nonnull
     @Getter
     private GUIData data;
@@ -26,6 +30,7 @@ public class GUIContainer extends SimplePacketListenerAbstract {
     }
 
     public void close(@Nonnull Player player) {
+        states.remove(data.stateId());
         WrapperPlayServerCloseWindow wrapper = new WrapperPlayServerCloseWindow();
         wrapper.setWindowId(data.windowId());
         PacketEvents.getAPI().getPlayerManager().sendPacket(player, wrapper);
@@ -33,6 +38,7 @@ public class GUIContainer extends SimplePacketListenerAbstract {
     }
 
     public void open(@Nonnull Player player) {
+        states.add(data.stateId());
         PacketEvents.getAPI().getEventManager().registerListener(this);
         if(data.slots() / 9 - 1 <= 5 || data.slots() / 9 - 1 >= 0) {
             WrapperPlayServerOpenWindow wrapper = new WrapperPlayServerOpenWindow(

@@ -33,6 +33,7 @@ mention:
 
 show-item:
   hover-text: "&e点击查看详情"
+  window-title: "物品详情"
 
 chat:
   channel-declined: "<#CC1613>错误: <#F85654>在此服务器无法通过该频道发送消息! &e&l<click:run_command:'/l'>[切换频道]</click>"

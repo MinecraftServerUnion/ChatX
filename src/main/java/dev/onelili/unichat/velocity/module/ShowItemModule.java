@@ -4,9 +4,11 @@ import com.github.retrooper.packetevents.protocol.component.ComponentTypes;
 import com.github.retrooper.packetevents.protocol.item.ItemStack;
 import com.velocitypowered.api.proxy.Player;
 import dev.onelili.unichat.velocity.gui.GUIData;
-import dev.onelili.unichat.velocity.util.ChaceData;
+import dev.onelili.unichat.velocity.util.Logger;
 import dev.onelili.unichat.velocity.util.PlayerData;
 import dev.onelili.unichat.velocity.message.Message;
+import dev.onelili.unichat.velocity.util.TimedHashMap;
+import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -16,6 +18,9 @@ import javax.annotation.Nonnull;
 import java.util.UUID;
 
 public class ShowItemModule extends PatternModule {
+    @Getter
+    private static final TimedHashMap<UUID, GUIData> guiMap = new TimedHashMap<>();
+
     @Override
     public @Nonnull Component handle(@Nonnull Player sender, boolean doProcess) {
         PlayerData data = PlayerData.getPlayerData(sender);
@@ -26,14 +31,13 @@ public class ShowItemModule extends PatternModule {
             return new Message("&7[&fNone&7]").toComponent();
 
         UUID uuid = UUID.randomUUID();
-        ChaceData.getChacedInventories().put(uuid, GUIData.ofSingleItem(item, null/*改为title*/));
-
+        guiMap.put(uuid, GUIData.ofSingleItem(item, Message.getMessage("show-item.window-title").toComponent()));
         return Component.empty()
                 .append(Component.text("[").color(NamedTextColor.GRAY))
                 .append(
                         item.getComponentOr(ComponentTypes.CUSTOM_NAME, item.getComponentOr(ComponentTypes.ITEM_NAME, Component.text("Unknown")))
                                 .hoverEvent(HoverEvent.showText(Message.getMessage("show-item.hover-text").toComponent()))
-                                .clickEvent(ClickEvent.runCommand("/check-item " + uuid))
+                                .clickEvent(ClickEvent.runCommand("/unichat item " + uuid))
                 )
                 .append(Component.text("]").color(NamedTextColor.GRAY));
     }

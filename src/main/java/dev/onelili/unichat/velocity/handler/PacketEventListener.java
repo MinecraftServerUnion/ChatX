@@ -6,20 +6,26 @@ import com.github.retrooper.packetevents.event.SimplePacketListenerAbstract;
 import com.github.retrooper.packetevents.event.simple.PacketPlayReceiveEvent;
 import com.github.retrooper.packetevents.event.simple.PacketPlaySendEvent;
 import com.github.retrooper.packetevents.protocol.chat.message.ChatMessage_v1_16;
+import com.github.retrooper.packetevents.protocol.item.ItemStack;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientClickWindow;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientHeldItemChange;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerPosition;
 import com.github.retrooper.packetevents.wrapper.play.server.*;
 import com.velocitypowered.api.proxy.Player;
 import dev.onelili.unichat.velocity.UniChat;
 import dev.onelili.unichat.velocity.channel.Channel;
+import dev.onelili.unichat.velocity.gui.GUIContainer;
 import dev.onelili.unichat.velocity.util.Config;
 import dev.onelili.unichat.velocity.util.ItemUtils;
 import dev.onelili.unichat.velocity.util.PlayerData;
+import lombok.SneakyThrows;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -56,6 +62,9 @@ public class PacketEventListener extends SimplePacketListenerAbstract {
                     UniChat.getLogger().debug("Failed to cast message in chat packet: {}", e.getMessage());
                 }
             }
+            case WINDOW_ITEMS, OPEN_WINDOW -> {
+                listenTo(event, 1);
+            }
             case PLAYER_POSITION_AND_LOOK -> {
                 WrapperPlayServerPlayerPositionAndLook packet = new WrapperPlayServerPlayerPositionAndLook(event);
                 Player player = event.getPlayer();
@@ -69,6 +78,7 @@ public class PacketEventListener extends SimplePacketListenerAbstract {
                         .setHandItem(packet.getSlot());
             }
             case SET_SLOT -> {
+                listenTo(event, 1);
                 WrapperPlayServerSetSlot packet = new WrapperPlayServerSetSlot(event);
                 Player player = event.getPlayer();
                 Objects.requireNonNull(PlayerData.getPlayerDataMap().computeIfAbsent(player.getUniqueId(), uuid -> new PlayerData()))
@@ -92,10 +102,34 @@ public class PacketEventListener extends SimplePacketListenerAbstract {
                 Objects.requireNonNull(PlayerData.getPlayerDataMap().computeIfAbsent(player.getUniqueId(), uuid -> new PlayerData()))
                         .setHandItem(packet.getSlot());
             }
+            case CLICK_WINDOW -> {
+                WrapperPlayClientClickWindow packet = new WrapperPlayClientClickWindow(event);
+                Player player = event.getPlayer();
+                if(packet.getStateId().isPresent() && GUIContainer.getStates().contains(packet.getStateId().get())) {
+                    
+                }
+            }
         }
     }
 
-    private void listenTo(ProtocolPacketEvent event) { // to debug
+    @SneakyThrows
+    private void printObject(Object obj, String prefix, int depth) {
+        for (Field field : obj.getClass().getDeclaredFields()) {
+            field.setAccessible(true);
+            if (depth - 1 <= 0) {
+                String cont = Objects.toString(field.get(obj));
+                if (cont.length() > 50) {
+                    cont = cont.substring(0, 30) + "..." + cont.substring(cont.length() - 20);
+                }
+                System.out.println(prefix+"- " + field.getName() + " : " + cont);
+            } else {
+                System.out.println(prefix+"- " + field.getName() + " :");
+                printObject(field.get(obj), prefix + "  ", depth - 1);
+            }
+        }
+    }
+
+    private void listenTo(ProtocolPacketEvent event, int depth) { // to debug
         try {
             com.github.retrooper.packetevents.wrapper.PacketWrapper<?> packet = null;
             for(Constructor<?> i : event.getPacketType().getWrapperClass().getConstructors()){
@@ -105,15 +139,7 @@ public class PacketEventListener extends SimplePacketListenerAbstract {
                 }
             }
             System.out.println(event.getClass().getSimpleName() + "("+ ((Player)event.getPlayer()).getUsername() +"): "+event.getPacketType());
-            if(packet != null)
-                for(Field field : packet.getClass().getDeclaredFields()){
-                    field.setAccessible(true);
-                    String cont = Objects.toString(field.get(packet));
-                    if(cont.length() > 50){
-                        cont = cont.substring(0, 30) + "..." + cont.substring(cont.length() - 20);
-                    }
-                    System.out.println("- " + field.getName() + " : " + cont);
-                }
+            if(packet != null && depth > 0) printObject(packet, "  ", depth);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

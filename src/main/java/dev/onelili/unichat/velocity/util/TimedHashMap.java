@@ -12,41 +12,41 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class TimedConcurrentHashMap<K, V> extends ConcurrentHashMap<K, V> implements TimedMap<K, V> {
+public class TimedHashMap<K, V> extends ConcurrentHashMap<K, V> implements TimedMap<K, V> {
     private final ConcurrentMap<K, Long> timestamps = new ConcurrentHashMap<>();
     private final ConcurrentMap<K, Long> keyExpirationTimes = new ConcurrentHashMap<>();
     private final AtomicLong globalExpirationTime = new AtomicLong(60000); // 默认60秒
     private final ScheduledExecutorService cleanupScheduler = Executors.newSingleThreadScheduledExecutor();
 
-    public TimedConcurrentHashMap(long expirationTime, TimeUnit unit) {
+    public TimedHashMap(long expirationTime, TimeUnit unit) {
         super();
         this.globalExpirationTime.set(unit.toMillis(expirationTime));
         scheduleCleanupTask();
     }
 
-    public TimedConcurrentHashMap() {
+    public TimedHashMap() {
         this(60, TimeUnit.SECONDS); // 默认60秒
     }
 
-    public TimedConcurrentHashMap(int initialCapacity, long expirationTime, TimeUnit unit) {
+    public TimedHashMap(int initialCapacity, long expirationTime, TimeUnit unit) {
         super(initialCapacity);
         this.globalExpirationTime.set(unit.toMillis(expirationTime));
         scheduleCleanupTask();
     }
 
-    public TimedConcurrentHashMap(Map<? extends K, ? extends V> m, long expirationTime, TimeUnit unit) {
+    public TimedHashMap(Map<? extends K, ? extends V> m, long expirationTime, TimeUnit unit) {
         super(m);
         this.globalExpirationTime.set(unit.toMillis(expirationTime));
         scheduleCleanupTask();
     }
 
-    public TimedConcurrentHashMap(int initialCapacity, float loadFactor, long expirationTime, TimeUnit unit) {
+    public TimedHashMap(int initialCapacity, float loadFactor, long expirationTime, TimeUnit unit) {
         super(initialCapacity, loadFactor);
         this.globalExpirationTime.set(unit.toMillis(expirationTime));
         scheduleCleanupTask();
     }
 
-    public TimedConcurrentHashMap(int initialCapacity, float loadFactor, int concurrencyLevel, long expirationTime, TimeUnit unit) {
+    public TimedHashMap(int initialCapacity, float loadFactor, int concurrencyLevel, long expirationTime, TimeUnit unit) {
         super(initialCapacity, loadFactor, concurrencyLevel);
         this.globalExpirationTime.set(unit.toMillis(expirationTime));
         scheduleCleanupTask();
