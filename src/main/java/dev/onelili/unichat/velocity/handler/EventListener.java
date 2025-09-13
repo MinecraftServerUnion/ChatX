@@ -4,17 +4,12 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
-import com.velocitypowered.api.proxy.Player;
 import dev.onelili.unichat.velocity.UniChat;
 import dev.onelili.unichat.velocity.channel.Channel;
 import dev.onelili.unichat.velocity.command.DirectMessageCommand;
 import dev.onelili.unichat.velocity.message.Message;
-import dev.onelili.unichat.velocity.module.PatternModule;
 import dev.onelili.unichat.velocity.util.Config;
-import dev.onelili.unichat.velocity.util.SimplePlayer;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import dev.onelili.unichat.velocity.util.PlayerData;
 
 import javax.annotation.Nonnull;
 

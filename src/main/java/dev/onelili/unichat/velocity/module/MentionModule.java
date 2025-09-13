@@ -8,7 +8,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSo
 import com.google.common.util.concurrent.AtomicDouble;
 import com.velocitypowered.api.proxy.Player;
 import dev.onelili.unichat.velocity.UniChat;
-import dev.onelili.unichat.velocity.handler.PlayerData;
+import dev.onelili.unichat.velocity.util.PlayerData;
 import dev.onelili.unichat.velocity.message.Message;
 import dev.onelili.unichat.velocity.util.Config;
 import net.kyori.adventure.bossbar.BossBar;

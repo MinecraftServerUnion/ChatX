@@ -12,12 +12,9 @@ import com.github.retrooper.packetevents.wrapper.play.server.*;
 import com.velocitypowered.api.proxy.Player;
 import dev.onelili.unichat.velocity.UniChat;
 import dev.onelili.unichat.velocity.channel.Channel;
-import dev.onelili.unichat.velocity.message.Message;
-import dev.onelili.unichat.velocity.module.PatternModule;
 import dev.onelili.unichat.velocity.util.Config;
 import dev.onelili.unichat.velocity.util.ItemUtils;
-import dev.onelili.unichat.velocity.util.Logger;
-import net.kyori.adventure.text.Component;
+import dev.onelili.unichat.velocity.util.PlayerData;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 import javax.annotation.Nonnull;

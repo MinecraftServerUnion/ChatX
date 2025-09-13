@@ -1,4 +1,4 @@
-package dev.onelili.unichat.velocity.handler;
+package dev.onelili.unichat.velocity.util;
 
 import com.github.retrooper.packetevents.protocol.item.ItemStack;
 import com.github.retrooper.packetevents.util.Vector3d;

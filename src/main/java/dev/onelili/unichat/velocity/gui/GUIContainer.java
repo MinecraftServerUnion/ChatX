@@ -7,64 +7,54 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerCl
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerOpenWindow;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWindowItems;
 import com.velocitypowered.api.proxy.Player;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-import net.kyori.adventure.text.Component;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
 
-@NoArgsConstructor
-@Getter
-@Setter
-@Accessors(chain = true, fluent = true)
-public class GUISession extends SimplePacketListenerAbstract {
-    private int windowId = new Random().nextInt();
-    private int stateId = new Random().nextInt();
-    private int slots = 27;
-    private Player player;
-    @Nullable
-    private Component title = null;
-    private Map<Integer, ItemStack> inventory = new ConcurrentHashMap<>();
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class GUIContainer extends SimplePacketListenerAbstract {
+    @Nonnull
+    @Getter
+    private GUIData data;
 
-    public void close() {
+    public static @Nonnull GUIContainer of(@Nonnull GUIData data) {
+        return new GUIContainer(data);
+    }
+
+    public void close(@Nonnull Player player) {
         WrapperPlayServerCloseWindow wrapper = new WrapperPlayServerCloseWindow();
-        wrapper.setWindowId(windowId);
+        wrapper.setWindowId(data.windowId());
         PacketEvents.getAPI().getPlayerManager().sendPacket(player, wrapper);
         PacketEvents.getAPI().getEventManager().unregisterListener(this);
     }
 
-    public void open() {
+    public void open(@Nonnull Player player) {
         PacketEvents.getAPI().getEventManager().registerListener(this);
-        Component windowTitle = title == null ? Component.empty() : title;
-        if(player != null && slots / 9 - 1 <= 5 || slots / 9 - 1 >= 0) {
+        if(data.slots() / 9 - 1 <= 5 || data.slots() / 9 - 1 >= 0) {
             WrapperPlayServerOpenWindow wrapper = new WrapperPlayServerOpenWindow(
-                    windowId,
-                    slots / 9 - 1,
-                    windowTitle
+                    data.windowId(),
+                    data.slots() / 9 - 1,
+                    data.title()
             );
             PacketEvents.getAPI().getPlayerManager().sendPacket(player, wrapper);
 
             List<ItemStack> items = new ArrayList<>();
-            for(int i = 0; i <= slots / 9 * 9; i++)
-                if(inventory.get(i) != null)
-                    items.add(inventory.get(i));
+            for(int i = 0; i <= data.slots() / 9 * 9; i++)
+                if(data.items().get(i) != null)
+                    items.add(data.items().get(i));
                 else
                     items.add(ItemStack.EMPTY);
             WrapperPlayServerWindowItems wrapper1 = new WrapperPlayServerWindowItems(
-                    windowId,
-                    stateId,
+                    data.windowId(),
+                    data.stateId(),
                     items,
                     null
             );
             PacketEvents.getAPI().getPlayerManager().sendPacket(player, wrapper1);
         }
     }
-
 }
