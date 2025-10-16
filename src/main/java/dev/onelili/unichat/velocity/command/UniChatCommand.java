@@ -16,7 +16,7 @@ public class UniChatCommand implements SimpleCommand {
     @Override
     public void execute(Invocation invocation) {
         if(invocation.arguments().length == 0 || invocation.arguments()[0].equals("version")){
-            invocation.source().sendMessage(new Message("<#47BFFB>UniChat v"+ UniChat.getProxy().getPluginManager().getPlugin("unichat").get().getDescription().getVersion()
+            invocation.source().sendMessage(new Message("<#47BFFB>UniChat v"+ UniChat.getProxy().getPluginManager().getPlugin("unichat").get().getDescription().getVersion().get()
                 + " by Jason31416 & onelili").toComponent());
             return;
         }

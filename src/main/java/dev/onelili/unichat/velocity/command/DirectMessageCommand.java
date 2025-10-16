@@ -51,7 +51,7 @@ public class DirectMessageCommand implements SimpleCommand {
                 return;
             }
 
-            if(lastMessage.get(sender.getUniqueId()) == null || UniChat.getProxy().getPlayer(lastMessage.get(sender.getUniqueId())).isPresent()){
+            if(!lastMessage.containsKey(sender.getUniqueId()) || UniChat.getProxy().getPlayer(lastMessage.get(sender.getUniqueId())).isEmpty()){
                 sender.sendMessage(Message.getMessage("command.reply-no-last-message").toComponent());
                 return;
             }
@@ -68,6 +68,7 @@ public class DirectMessageCommand implements SimpleCommand {
         target.sendMessage(inbound);
         sender.sendMessage(outbound);
         lastMessage.put(target.getUniqueId(), sender.getUniqueId());
+        lastMessage.put(sender.getUniqueId(), target.getUniqueId());
 
         ChatHistoryManager.recordMessage(sender.getUsername(), "msg", target.getUsername(), LegacyComponentSerializer.legacyAmpersand().serialize(msg));
     }
@@ -86,7 +87,7 @@ public class DirectMessageCommand implements SimpleCommand {
         commands.addAll(Config.getConfigTree().getStringList("message.message-command"));
         commands.addAll(Config.getConfigTree().getStringList("message.reply-command"));
         CommandMeta meta = UniChat.getProxy().getCommandManager()
-                .metaBuilder(commands.getFirst())
+                .metaBuilder(commands.get(0))
                 .aliases(commands.subList(1, commands.size()).toArray(String[]::new))
                 .build();
         Channel.getRegisteredChannelCommands().add(meta);

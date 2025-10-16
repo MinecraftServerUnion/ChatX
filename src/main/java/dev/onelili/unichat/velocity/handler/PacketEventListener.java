@@ -6,6 +6,7 @@ import com.github.retrooper.packetevents.event.ProtocolPacketEvent;
 import com.github.retrooper.packetevents.event.SimplePacketListenerAbstract;
 import com.github.retrooper.packetevents.event.simple.PacketPlayReceiveEvent;
 import com.github.retrooper.packetevents.event.simple.PacketPlaySendEvent;
+import com.github.retrooper.packetevents.protocol.ConnectionState;
 import com.github.retrooper.packetevents.protocol.chat.message.ChatMessage_v1_16;
 import com.github.retrooper.packetevents.protocol.item.ItemStack;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientClickWindow;
@@ -39,6 +40,7 @@ public class PacketEventListener extends SimplePacketListenerAbstract {
 
     @Override
     public void onPacketPlaySend(@Nonnull PacketPlaySendEvent event) {
+        if(event.getPlayer()==null||((Player) event.getPlayer()).getCurrentServer().isEmpty()||event.getConnectionState()== ConnectionState.LOGIN) return;
         switch(event.getPacketType()) {
             case CHAT_MESSAGE -> {
                 WrapperPlayServerChatMessage packet = new WrapperPlayServerChatMessage(event);
@@ -95,6 +97,7 @@ public class PacketEventListener extends SimplePacketListenerAbstract {
 
     @Override
     public void onPacketPlayReceive(@Nonnull PacketPlayReceiveEvent event) {
+        if(event.getPlayer()==null||((Player) event.getPlayer()).getCurrentServer().isEmpty()||event.getConnectionState()== ConnectionState.LOGIN) return;
         switch(event.getPacketType()) {
             case PLAYER_POSITION -> {
                 WrapperPlayClientPlayerPosition packet = new WrapperPlayClientPlayerPosition(event);

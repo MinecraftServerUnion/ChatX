@@ -7,6 +7,7 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyReloadEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
+import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -37,6 +38,9 @@ import java.util.UUID;
         authors = {
                 "oneLiLi",
                 "jason31416"
+        },
+        dependencies = {
+                @Dependency(id = "packetevents", optional = true)
         }
 )
 public class UniChat {
@@ -66,6 +70,7 @@ public class UniChat {
         PacketEvents.setAPI(VelocityPacketEventsBuilder.build(proxy, proxy.getPluginManager().fromInstance(this).orElseThrow(), logger, dataDirectory.toPath()));
         PacketEvents.getAPI().getSettings().checkForUpdates(false);
         PacketEvents.getAPI().load();
+
         PacketEvents.getAPI().getEventManager().registerListener(new PacketEventListener());
         PacketEvents.getAPI().init();
 

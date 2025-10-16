@@ -103,12 +103,14 @@ public class Channel {
                     channelPrefixes.put(prefix.toLowerCase(Locale.ROOT), channel);
                 }
                 List<String> commands = (List<String>) Config.getItem("channels." + i + ".commands");
-                CommandMeta meta = UniChat.getProxy().getCommandManager()
-                        .metaBuilder(commands.getFirst())
-                                .aliases(commands.subList(1, commands.size()).toArray(String[]::new))
-                                .build();
+                if(!commands.isEmpty()){
+                    CommandMeta meta = UniChat.getProxy().getCommandManager()
+                            .metaBuilder(commands.get(0))
+                                    .aliases(commands.subList(1, commands.size()).toArray(String[]::new))
+                                    .build();
                 registeredChannelCommands.add(meta);
                 UniChat.getProxy().getCommandManager().register(meta, channel.handler.getCommand(channel));
+                }
                 if(defaultChannel == null) defaultChannel = channel;
             } catch (Exception e) {
                 Logger.error("Failed to load channel " + i);
