@@ -120,8 +120,6 @@ public class Channel {
         }
     }
     public static void handleChat(Player player, Channel channel, String message){
-        if(player == null)
-            channel.getHandler().handle(SimplePlayer.console, message);
         channel.getHandler().handle(new SimplePlayer(player), message);
     }
 }

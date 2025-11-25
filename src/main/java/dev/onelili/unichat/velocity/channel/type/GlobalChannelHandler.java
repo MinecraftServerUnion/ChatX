@@ -34,7 +34,7 @@ public class GlobalChannelHandler implements ChannelHandler {
 
         ChatHistoryManager.recordMessage(player.getName(),
                 channel.getId(),
-                player.getCurrentServer()!=null?player.getCurrentServer().getServerInfo().getName():null,
+                player.getCurrentServer(),
                 LegacyComponentSerializer.legacyAmpersand().serialize(cmp));
 
         for(Player receiver : UniChat.getProxy().getAllPlayers()) {

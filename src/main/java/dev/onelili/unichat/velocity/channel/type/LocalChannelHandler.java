@@ -25,18 +25,12 @@ public class LocalChannelHandler implements ChannelHandler {
                 .add("channel", channel.getDisplayName())
                 .toComponent().append(msg);
 
-        ChatHistoryManager.recordMessage(player.getName(),
-                channel.getId(),
-                player.getCurrentServer()!=null?player.getCurrentServer().getServerInfo().getName():null,
-                LegacyComponentSerializer.legacyAmpersand().serialize(msg));
-
         if (channel.isLogToConsole())
             UniChat.getProxy().getConsoleCommandSource().sendMessage(component);
         if (player.getCurrentServer()!=null) {
-            for (Player pl : player.getCurrentServer().getServer().getPlayersConnected()) {
+            for (Player pl : player.getServerPlayers()) {
                 pl.sendMessage(component);
             }
         }
     }
-
 }

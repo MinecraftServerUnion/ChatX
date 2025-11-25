@@ -15,6 +15,7 @@ channels:
     type: LOCAL
     passthrough: true
     respect-backend: true # 若为true, 消息将会仅在后端服务器返回该聊天消息时被显示。适用于对聊天事件有所修改的服务器等。
+    log-cancelled-messages: true # 若为true, 后端未返回的消息仍然将会被记录在日志中。仅respect-backend为true时有效。
     format: "&f<click:suggest_command:'@%player%'><%player%></click> &r"
     commands:
       - local

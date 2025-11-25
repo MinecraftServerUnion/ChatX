@@ -8,32 +8,21 @@ import lombok.Getter;
 import net.kyori.adventure.bossbar.BossBar;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 public class SimplePlayer {
-    public static SimplePlayer console;
-    static {
-        console = new SimplePlayer(null){
-            @Override
-            public String getName() {
-                return MessageLoader.getMessage("chat.console-name", "CONSOLE").toString();
-            }
-            @Override
-            public UUID getPlayerUUID() {
-                return null;
-            }
-            @Override
-            public boolean hasPermission(@Nonnull String permission) {
-                return true;
-            }
-        };
-    }
-
     @Getter
     private final Player player;
 
-    public ServerConnection getCurrentServer() {
-        return player.getCurrentServer().orElse(null);
+    public String getCurrentServer() {
+        if(player == null) return "Console";
+        return player.getCurrentServer().isPresent()? player.getCurrentServer().get().getServerInfo().getName() : "Unknown";
+    }
+    public Collection<Player> getServerPlayers() {
+        if(player == null) return List.of();
+        return player.getCurrentServer().isPresent()? player.getCurrentServer().get().getServer().getPlayersConnected() : List.of();
     }
 
     public SimplePlayer(Player player){
@@ -41,6 +30,7 @@ public class SimplePlayer {
     }
 
     public String getName() {
+        if(player == null) return MessageLoader.getMessage("chat.console-name", "CONSOLE").toString();
         return player.getUsername();
     }
 
