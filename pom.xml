@@ -138,7 +138,8 @@
             <groupId>org.geysermc.floodgate</groupId>
             <artifactId>api</artifactId>
             <version>2.2.4-SNAPSHOT</version>
-            <scope>provided</scope>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/floodgate-velocity.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>net.skinsrestorer</groupId>

@@ -1,19 +1,21 @@
 package dev.onelili.unichat.velocity.module;
 
 import com.github.retrooper.packetevents.protocol.component.ComponentTypes;
+import com.github.retrooper.packetevents.protocol.component.builtin.item.ItemEnchantments;
 import com.github.retrooper.packetevents.protocol.item.ItemStack;
 import com.velocitypowered.api.proxy.Player;
 import dev.onelili.unichat.velocity.gui.GUIData;
+import dev.onelili.unichat.velocity.util.ItemUtil;
 import dev.onelili.unichat.velocity.util.PlayerData;
 import dev.onelili.unichat.velocity.message.Message;
 import dev.onelili.unichat.velocity.util.TimedHashMap;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 import javax.annotation.Nonnull;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class ShowItemModule extends PatternModule {
@@ -35,7 +37,8 @@ public class ShowItemModule extends PatternModule {
                 .append(Component.text("[").color(NamedTextColor.GRAY))
                 .append(
                         item.getComponentOr(ComponentTypes.CUSTOM_NAME, item.getComponentOr(ComponentTypes.ITEM_NAME, Component.text("Unknown")))
-//                                .hoverEvent(HoverEvent.showText(Message.getMessage("show-item.hover-text").toComponent()))
+//                                .hoverEvent(HoverEvent.showItem(ItemUtil.showItem(item)))
+//                                .color(item.getComponent(ComponentTypes.ENCHANTMENTS).orElse(new ItemEnchantments(new HashMap<>())).getEnchantments().isEmpty() ? NamedTextColor.WHITE : NamedTextColor.AQUA)
 //                                .clickEvent(ClickEvent.runCommand("/unichat item " + uuid))
                 )
                 .append(Component.text("]").color(NamedTextColor.GRAY));

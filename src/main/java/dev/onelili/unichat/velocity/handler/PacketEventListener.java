@@ -19,7 +19,6 @@ import dev.onelili.unichat.velocity.UniChat;
 import dev.onelili.unichat.velocity.channel.Channel;
 import dev.onelili.unichat.velocity.gui.GUIContainer;
 import dev.onelili.unichat.velocity.util.Config;
-import dev.onelili.unichat.velocity.util.ItemUtils;
 import dev.onelili.unichat.velocity.util.PlayerData;
 import dev.onelili.unichat.velocity.util.ShitMountainException;
 import lombok.SneakyThrows;

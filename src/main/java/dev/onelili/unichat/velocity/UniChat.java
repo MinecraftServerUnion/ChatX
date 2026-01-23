@@ -42,6 +42,7 @@ import java.util.UUID;
         dependencies = {
                 @Dependency(id = "packetevents", optional = true)
         }
+
 )
 public class UniChat {
     @Getter
@@ -67,10 +68,12 @@ public class UniChat {
         proxy.getEventManager().register(this, new EventListener());
         Config.init();
         MessageLoader.initialize();
+
         PacketEvents.setAPI(VelocityPacketEventsBuilder.build(proxy, proxy.getPluginManager().fromInstance(this).orElseThrow(), logger, dataDirectory.toPath()));
         PacketEvents.getAPI().getSettings().checkForUpdates(false);
-        PacketEvents.getAPI().load();
+        PacketEvents.getAPI().getSettings().kickOnPacketException(false);
 
+        PacketEvents.getAPI().load();
         PacketEvents.getAPI().getEventManager().registerListener(new PacketEventListener());
         PacketEvents.getAPI().init();
 

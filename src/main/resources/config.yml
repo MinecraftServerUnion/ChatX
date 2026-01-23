@@ -15,7 +15,7 @@ channels:
     type: LOCAL
     passthrough: true
     respect-backend: true # 若为true, 消息将会仅在后端服务器返回该聊天消息时被显示。适用于对聊天事件有所修改的服务器等。
-    log-cancelled-messages: true # 若为true, 后端未返回的消息仍然将会被记录在日志中。仅respect-backend为true时有效。
+    log-console: true
     format: "&f<click:suggest_command:'@%player%'><%player%></click> &r"
     commands:
       - local
@@ -24,6 +24,7 @@ channels:
     name: "跨服"
     type: GLOBAL
     format: "<#47BFFB>[跨服] <click:suggest_command:'@%player%'>&8[&f%player%&8]</click>&r "
+    log-console: true
     # 玩家在以下列出的服务器中将无法在本频道中发送消息
     restricted-servers:
       - "server1"
@@ -37,6 +38,7 @@ channels:
     name: "管理"
     type: GLOBAL
     format: "<#FFA500>[管理] <click:suggest_command:'@%player%'>&8[&f%player%&8]</click>&r "
+    log-console: true
     commands:
       - staff
     receive-permission: "unichat.channel.staff"
@@ -60,6 +62,7 @@ channels:
     name: "房间"
     type: ROOM
     format: "<#ff6600>[房间 %room_code%] &8[&f%player%&8] &f"
+    log-console: true
     commands:
       - room
 

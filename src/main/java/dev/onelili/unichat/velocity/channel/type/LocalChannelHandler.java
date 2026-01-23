@@ -25,8 +25,8 @@ public class LocalChannelHandler implements ChannelHandler {
                 .add("channel", channel.getDisplayName())
                 .toComponent().append(msg);
 
-        if (channel.isLogToConsole())
-            UniChat.getProxy().getConsoleCommandSource().sendMessage(component);
+//        if (channel.isLogToConsole())
+//            UniChat.getProxy().getConsoleCommandSource().sendMessage(component);
         if (player.getCurrentServer()!=null) {
             for (Player pl : player.getServerPlayers()) {
                 pl.sendMessage(component);

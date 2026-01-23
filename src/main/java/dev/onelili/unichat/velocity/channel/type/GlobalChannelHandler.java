@@ -9,6 +9,8 @@ import dev.onelili.unichat.velocity.message.Message;
 import dev.onelili.unichat.velocity.module.PatternModule;
 import dev.onelili.unichat.velocity.util.SimplePlayer;
 import lombok.SneakyThrows;
+import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.chat.ChatType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -40,7 +42,7 @@ public class GlobalChannelHandler implements ChannelHandler {
         for(Player receiver : UniChat.getProxy().getAllPlayers()) {
             if(channel.getReceivePermission() != null&&!receiver.hasPermission(channel.getReceivePermission()))
                 continue;
-            receiver.sendMessage(component);
+            receiver.sendMessage(component, ChatType.CHAT.bind(component));
         }
         if(channel.isLogToConsole())
             UniChat.getProxy().getConsoleCommandSource().sendMessage(component);
