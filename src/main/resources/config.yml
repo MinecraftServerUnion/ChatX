@@ -13,9 +13,9 @@ channels:
   local:
     name: "本地"
     type: LOCAL
-    passthrough: true
+    passthrough: true # 是否将消息传回后端
     respect-backend: true # 若为true, 消息将会仅在后端服务器返回该聊天消息时被显示。适用于对聊天事件有所修改的服务器等。
-    log-console: true
+    log-console: true # 是否在控制台打印聊天消息（本选项在local类型中优先级最高，无论后端如何都将处理）
     format: "&f<click:suggest_command:'@%player%'><%player%></click> &r"
     commands:
       - local

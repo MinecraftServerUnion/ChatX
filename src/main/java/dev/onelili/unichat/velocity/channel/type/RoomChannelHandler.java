@@ -8,6 +8,7 @@ import dev.onelili.unichat.velocity.channel.ChannelHandler;
 import dev.onelili.unichat.velocity.handler.ChatHistoryManager;
 import dev.onelili.unichat.velocity.message.Message;
 import dev.onelili.unichat.velocity.module.PatternModule;
+import dev.onelili.unichat.velocity.util.PlaceholderUtil;
 import dev.onelili.unichat.velocity.util.ShitMountainException;
 import dev.onelili.unichat.velocity.util.SimplePlayer;
 import net.kyori.adventure.text.Component;
@@ -35,22 +36,24 @@ public class RoomChannelHandler implements ChannelHandler {
     public void handle(@NotNull SimplePlayer player, @NotNull String message) {
         if(!rooms.containsKey(player))
             throw new ShitMountainException("Player "+player.getName()+" is not in a room but somehow called room channel!");
-        Component msg = PatternModule.handleMessage(player.getPlayer(), message, true),
-                component = new Message(channel.getChannelConfig().getString("format"))
-                .add("player", player.getName())
-                .add("room_code", rooms.get(player)).toComponent()
-                .append(msg);
+        Component msg = PatternModule.handleMessage(player.getPlayer(), message, true);
+        PlaceholderUtil.replacePlaceholders(channel.getChannelConfig().getString("format"), player.getPlayer()).thenAccept(text-> {
+            Component component = new Message(text)
+                    .add("player", player.getName())
+                    .add("room_code", rooms.get(player)).toComponent()
+                    .append(msg);
 
-        ChatHistoryManager.recordMessage(player.getName(),
-                channel.getId(),
-                rooms.get(player),
-                LegacyComponentSerializer.legacyAmpersand().serialize(msg));
+            ChatHistoryManager.recordMessage(player.getName(),
+                    channel.getId(),
+                    rooms.get(player),
+                    LegacyComponentSerializer.legacyAmpersand().serialize(msg));
 
-        for(SimplePlayer p : getPlayersInRoom(rooms.get(player))){
-            if(channel.getReceivePermission() != null&&!p.hasPermission(channel.getReceivePermission()))
-                continue;
-            p.getPlayer().sendMessage(component);
-        }
+            for (SimplePlayer p : getPlayersInRoom(rooms.get(player))) {
+                if (channel.getReceivePermission() != null && !p.hasPermission(channel.getReceivePermission()))
+                    continue;
+                p.getPlayer().sendMessage(component);
+            }
+        });
     }
 
     public SimpleCommand getCommand(Channel channel) {

@@ -125,6 +125,10 @@
             <id>jitpack</id>
             <url>https://jitpack.io</url>
         </repository>
+        <repository>
+            <id>william278</id>
+            <url>https://repo.william278.net/releases/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -169,6 +173,12 @@
             <groupId>io.github.miniplaceholders</groupId>
             <artifactId>miniplaceholders-api</artifactId>
             <version>3.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.william278</groupId>
+            <artifactId>papiproxybridge</artifactId>
+            <version>1.6</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

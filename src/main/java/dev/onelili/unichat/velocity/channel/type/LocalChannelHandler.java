@@ -7,6 +7,7 @@ import dev.onelili.unichat.velocity.channel.ChannelHandler;
 import dev.onelili.unichat.velocity.handler.ChatHistoryManager;
 import dev.onelili.unichat.velocity.message.Message;
 import dev.onelili.unichat.velocity.module.PatternModule;
+import dev.onelili.unichat.velocity.util.PlaceholderUtil;
 import dev.onelili.unichat.velocity.util.SimplePlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -20,17 +21,18 @@ public class LocalChannelHandler implements ChannelHandler {
     @Override
     public void handle(@NotNull SimplePlayer player, @NotNull String message) {
         Component msg = PatternModule.handleMessage(player.getPlayer(), message, true);
-        Component component = new Message(channel.getChannelConfig().getString("format"))
-                .add("player", player.getName())
-                .add("channel", channel.getDisplayName())
-                .toComponent().append(msg);
+        PlaceholderUtil.replacePlaceholders(channel.getChannelConfig().getString("format"),player.getPlayer())
+                .thenAccept(text->{
+                    Component component = new Message(text)
+                            .add("player", player.getName())
+                            .add("channel", channel.getDisplayName())
+                            .toComponent().append(msg);
 
-//        if (channel.isLogToConsole())
-//            UniChat.getProxy().getConsoleCommandSource().sendMessage(component);
-        if (player.getCurrentServer()!=null) {
-            for (Player pl : player.getServerPlayers()) {
-                pl.sendMessage(component);
-            }
-        }
+                    if (player.getCurrentServer()!=null) {
+                        for (Player pl : player.getServerPlayers()) {
+                            pl.sendMessage(component);
+                        }
+                    }
+                });
     }
 }

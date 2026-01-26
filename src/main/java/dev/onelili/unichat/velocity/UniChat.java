@@ -21,6 +21,7 @@ import dev.onelili.unichat.velocity.handler.PacketEventListener;
 import dev.onelili.unichat.velocity.message.MessageLoader;
 import dev.onelili.unichat.velocity.module.PatternModule;
 import dev.onelili.unichat.velocity.util.Config;
+import dev.onelili.unichat.velocity.util.PlaceholderUtil;
 import io.github.retrooper.packetevents.velocity.factory.VelocityPacketEventsBuilder;
 import lombok.Getter;
 import org.slf4j.Logger;
@@ -68,6 +69,8 @@ public class UniChat {
         proxy.getEventManager().register(this, new EventListener());
         Config.init();
         MessageLoader.initialize();
+
+        PlaceholderUtil.init();
 
         PacketEvents.setAPI(VelocityPacketEventsBuilder.build(proxy, proxy.getPluginManager().fromInstance(this).orElseThrow(), logger, dataDirectory.toPath()));
         PacketEvents.getAPI().getSettings().checkForUpdates(false);

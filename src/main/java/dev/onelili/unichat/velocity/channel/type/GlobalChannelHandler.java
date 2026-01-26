@@ -7,6 +7,7 @@ import dev.onelili.unichat.velocity.channel.ChannelHandler;
 import dev.onelili.unichat.velocity.handler.ChatHistoryManager;
 import dev.onelili.unichat.velocity.message.Message;
 import dev.onelili.unichat.velocity.module.PatternModule;
+import dev.onelili.unichat.velocity.util.PlaceholderUtil;
 import dev.onelili.unichat.velocity.util.SimplePlayer;
 import lombok.SneakyThrows;
 import net.kyori.adventure.audience.MessageType;
@@ -28,23 +29,26 @@ public class GlobalChannelHandler implements ChannelHandler {
 
     @Override
     public void handle(@Nonnull SimplePlayer player, @NotNull String message) {
-        Message msg = new Message(channel.getChannelConfig().getString("format"));
-        msg.add("player", player.getName());
-        msg.add("channel", channel.getDisplayName());
-        Component cmp = PatternModule.handleMessage(player.getPlayer(), message, true);
-        Component component = msg.toComponent().append(cmp);
+        PlaceholderUtil.replacePlaceholders(channel.getChannelConfig().getString("format"), player.getPlayer())
+                .thenAccept(text->{
+                    Message msg = new Message(text);
+                    msg.add("player", player.getName());
+                    msg.add("channel", channel.getDisplayName());
+                    Component cmp = PatternModule.handleMessage(player.getPlayer(), message, true);
+                    Component component = msg.toComponent().append(cmp);
 
-        ChatHistoryManager.recordMessage(player.getName(),
-                channel.getId(),
-                player.getCurrentServer(),
-                LegacyComponentSerializer.legacyAmpersand().serialize(cmp));
+                    ChatHistoryManager.recordMessage(player.getName(),
+                            channel.getId(),
+                            player.getCurrentServer(),
+                            LegacyComponentSerializer.legacyAmpersand().serialize(cmp));
 
-        for(Player receiver : UniChat.getProxy().getAllPlayers()) {
-            if(channel.getReceivePermission() != null&&!receiver.hasPermission(channel.getReceivePermission()))
-                continue;
-            receiver.sendMessage(component, ChatType.CHAT.bind(component));
-        }
-        if(channel.isLogToConsole())
-            UniChat.getProxy().getConsoleCommandSource().sendMessage(component);
+                    for(Player receiver : UniChat.getProxy().getAllPlayers()) {
+                        if(channel.getReceivePermission() != null&&!receiver.hasPermission(channel.getReceivePermission()))
+                            continue;
+                        receiver.sendMessage(component, ChatType.CHAT.bind(component));
+                    }
+                    if(channel.isLogToConsole())
+                        UniChat.getProxy().getConsoleCommandSource().sendMessage(component);
+                });
     }
 }

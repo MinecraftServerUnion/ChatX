@@ -11,6 +11,7 @@ import dev.onelili.unichat.velocity.command.DirectMessageCommand;
 import dev.onelili.unichat.velocity.message.Message;
 import dev.onelili.unichat.velocity.module.PatternModule;
 import dev.onelili.unichat.velocity.util.Config;
+import dev.onelili.unichat.velocity.util.PlaceholderUtil;
 import dev.onelili.unichat.velocity.util.PlayerData;
 import net.kyori.adventure.text.Component;
 
@@ -53,11 +54,14 @@ public class EventListener {
             if(channel.getHandler() instanceof LocalChannelHandler) {
                 if (channel.isLogToConsole()) {
                     Component msg = PatternModule.handleMessage(event.getPlayer(), message, false);
-                    Component component = new Message(channel.getChannelConfig().getString("format"))
-                            .add("player", event.getPlayer().getUsername())
-                            .add("channel", channel.getDisplayName())
-                            .toComponent().append(msg);
-                    UniChat.getProxy().getConsoleCommandSource().sendMessage(component);
+                    PlaceholderUtil.replacePlaceholders(channel.getChannelConfig().getString("format"), event.getPlayer())
+                            .thenAccept(text->{
+                                Component component = new Message(text)
+                                        .add("player", event.getPlayer().getUsername())
+                                        .add("channel", channel.getDisplayName())
+                                        .toComponent().append(msg);
+                                UniChat.getProxy().getConsoleCommandSource().sendMessage(component);
+                            });
                 }
 
                 ChatHistoryManager.recordMessage(event.getPlayer().getUsername(), channel.getId(), event.getPlayer().getCurrentServer().get().getServerInfo().getName(), message);
