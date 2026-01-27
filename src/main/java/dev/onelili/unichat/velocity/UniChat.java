@@ -35,15 +35,15 @@ import java.util.UUID;
 @Plugin(
         id = "unichat",
         name = "UniChat",
-        version = "1.0.0",
+        version = "1.0.4",
         authors = {
                 "oneLiLi",
                 "jason31416"
         },
         dependencies = {
-                @Dependency(id = "packetevents", optional = true)
+                @Dependency(id = "packetevents", optional = true),
+                @Dependency(id = "papiproxybridge", optional = true)
         }
-
 )
 public class UniChat {
     @Getter

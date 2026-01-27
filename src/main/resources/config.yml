@@ -1,43 +1,45 @@
-# 在cross-server频道中显示的本服务器群组名称
+# Server group name displayed in cross-server channels
 server-name: "Velocity"
 
-# 以下服务器中的玩家在启用"passthrough"选项时，本插件不会处理其聊天消息!
-# 适用于若某子服使用了独立的聊天插件
+lang: "en-US"
+
+# Players on the following servers will not have their chat messages processed by this plugin when "passthrough" option is enabled!
+# Suitable for cases where a sub-server uses its own independent chat plugin
 unhandled-servers:
   - "server1"
   - "server2"
 
-# 以下为服务器频道配置，您可以随意添加/删除频道
-# 以下列出的第一个频道将被设为玩家进服默认频道
+# Server channel configuration below, you can freely add/delete channels
+# The first channel listed below will be set as the default channel for players when they join
 channels:
   local:
-    name: "本地"
+    name: "Local"
     type: LOCAL
-    passthrough: true # 是否将消息传回后端
-    respect-backend: true # 若为true, 消息将会仅在后端服务器返回该聊天消息时被显示。适用于对聊天事件有所修改的服务器等。
-    log-console: true # 是否在控制台打印聊天消息（本选项在local类型中优先级最高，无论后端如何都将处理）
+    passthrough: true # Whether to pass messages back to the backend
+    respect-backend: true # If true, messages will only be displayed when the backend server returns the chat message. Suitable for servers that modify chat events, etc.
+    log-console: true # Whether to print chat messages to console (this option has highest priority in LOCAL type, will process regardless of backend)
     format: "&f<click:suggest_command:'@%player%'><%player%></click> &r"
     commands:
       - local
       - l
   global:
-    name: "跨服"
+    name: "Global"
     type: GLOBAL
-    format: "<#47BFFB>[跨服] <click:suggest_command:'@%player%'>&8[&f%player%&8]</click>&r "
+    format: "<#47BFFB>[GLOBAL] <click:suggest_command:'@%player%'>&8[&f%player%&8]</click>&r "
     log-console: true
-    # 玩家在以下列出的服务器中将无法在本频道中发送消息
+    # Players on the following servers will not be able to send messages in this channel
     restricted-servers:
       - "server1"
     commands:
       - global
       - g
-    # 若玩家发送的消息开头为以下列出内容，将会自动去除该开头并将该消息发送至本频道，忽略玩家当前实际所在频道
+    # If a player's message starts with the following content, it will automatically remove that prefix and send the message to this channel, ignoring the player's actual current channel
     prefixes:
       - "!"
   staff:
-    name: "管理"
+    name: "Staff"
     type: GLOBAL
-    format: "<#FFA500>[管理] <click:suggest_command:'@%player%'>&8[&f%player%&8]</click>&r "
+    format: "<#FFA500>[STAFF] <click:suggest_command:'@%player%'>&8[&f%player%&8]</click>&r "
     log-console: true
     commands:
       - staff
@@ -45,9 +47,9 @@ channels:
     send-permission: "unichat.channel.staff"
 
 #  crossserver:
-#    name: "世界"
+#    name: "World"
 #    type: REDIS
-#    format: "<#47fbeb>[世界] %server% &8[&f%player%&8]&f "
+#    format: "<#47fbeb>[WORLD] %server% &8[&f%player%&8]&f "
 #    redis-address: "0.0.0.0"
 #    redis-port:  6379
 ##   redis-user: "admin"
@@ -56,19 +58,19 @@ channels:
 #      - crossserver
 #      - cs
 
-  # 注意：ROOM类型频道比较特殊：配置中应最多有一个频道被标为ROOM!
-  # 玩家可以使用 /room 以切换至本频道并发送消息给同处于同一房间的玩家
+  # Note: ROOM type channels are special: there should be at most one channel marked as ROOM in the configuration!
+  # Players can use /room to switch to this channel and send messages to players in the same room
   room:
-    name: "房间"
+    name: "Room"
     type: ROOM
-    format: "<#ff6600>[房间 %room_code%] &8[&f%player%&8] &f"
+    format: "<#ff6600>[Room %room_code%] &8[&f%player%&8] &f"
     log-console: true
     commands:
       - room
 
 message: # /msg
-  format-inbound: '<#47BFFB>%name% &8→ <#47BFFB>你&8: '
-  format-outbound: '<#47BFFB>你 &8→ <#47BFFB>%name%&8: '
+  format-inbound: '<#47BFFB>%name% &8→ <#47BFFB>You&8: '
+  format-outbound: '<#47BFFB>You &8→ <#47BFFB>%name%&8: '
   message-command:
     - msg
   reply-command:
@@ -80,7 +82,7 @@ chat-history:
 
 module:
   mention:
-    bossbar-progress-decrease: 0.05 # 0-1, 一般 0.05 即可
+    bossbar-progress-decrease: 0.05 # 0-1, generally 0.05 is sufficient
     sound-effect-id: "minecraft:entity.experience_orb.pickup"
     sound-effect-volume: 1 # 0-1
     sound-effect-pitch: 1 # 0.5-2

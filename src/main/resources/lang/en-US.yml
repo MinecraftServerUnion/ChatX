@@ -1,0 +1,42 @@
+command:
+  cannot-execute-from-console: "<#CC1613>Error: <#F85654>This command must be executed by a player!"
+  joined-channel: "<#47BFFB>Successfully joined <#35CEE9><b>%channel%</b> <#47BFFB>channel"
+  invalid-arguments: "<#CC1613>Error: <#F85654>Invalid arguments!"
+
+  msg-usage: "&cUsage: /msg <player> <message>"
+  reply-usage: "&cUsage: /reply <message>"
+  player-not-found: "<#CC1613>Error: <#F85654>Player %player% not found!"
+  msg-self: "<#CC1613>Error: <#F85654>Cannot send message to yourself!"
+  reply-no-last-message: "<#CC1613>Error: <#F85654>No message to reply to!"
+
+  invalid-timestamp: "<#CC1613>Error: <#F85654>Invalid timestamp!"
+
+  not-in-room: "<#CC1613>Error: <#F85654>You are not in any room! Please use /room create to create a room first!"
+  joined-room: "<#47BFFB>Successfully joined room <#35CEE9><b>#%room_code%</b><#47BFFB>! <click:suggest_command:'/room invite '>Other players can use&7 /room %room_code% <#47BFFB>to join the room</click>"
+  room-not-found: "<#CC1613>Error: <#F85654>This room does not exist!"
+  invited-others: "<#47BFFB>Successfully invited<#35CEE9> %player%<#47BFFB> to the chat room!"
+  invited-to-room: "<#47BFFB>You have been invited to chat room <#35CEE9>#%room_code%<#47BFFB>! &a&l<click:run_command:'/room %room_code%'>[Click to join]</click>"
+
+  channel-not-found: "<#CC1613>Error: <#F85654>This channel does not exist!"
+
+  chat-history:
+    channel-header: "&7====== <#47BFFB>Chat History - Channel List &7======"
+    channel-item: "&7- <#47BFFB><click:run_command:'/chathistory %channel_id%'>%channel_name%</click>"
+    chat-header: "&7====== <#47BFFB>Chat History - %channel_name% &7==== <click:suggest_command:'/chathistory search %channel_id% 1 '><#47BFFB>[🔍]</click>"
+    chat-item: "&7<hover:show_text:'&7%date% @%server%'>%time%</hover> &f%sender%&7: &f%message%"
+    chat-footer: "<click:run_command:'/chathistory %channel_id% before %timestamp_prev%'><#47BFFB>[<] Previous Page</click> &7| <click:run_command:'/chathistory %channel_id% after %timestamp_next%'><#47BFFB>Next Page [>]</click>"
+    chat-search-footer: "<click:run_command:'/chathistory search %channel_id% %page_prev% %keyword%'><#47BFFB>[<] Previous Page</click> &7| <click:run_command:'/chathistory search %channel_id% %page_next% %keyword%'><#47BFFB>Next Page [>]</click>"
+    empty: "<#CC1613>Error: <#F85654>No chat history for this channel yet!"
+
+mention:
+  bossbar-title: "&e&l%sender% mentioned you!"
+
+show-item:
+  hover-text: "&eClick to view details"
+  window-title: "Item Details"
+
+chat:
+  console-name: "CONSOLE"
+  channel-declined: "<#CC1613>Error: <#F85654>Cannot send messages through this channel on this server! &e&l<click:run_command:'/l'>[Switch Channel]</click>"
+  no-send-permission: "<#CC1613>Error: <#F85654>You don't have permission to send messages in this channel! &e&l<click:run_command:'/l'>[Switch Channel]</click>"
+  cannot-command-send-passthrough: "<#CC1613>Error: <#F85654>This channel does not allow sending messages via command!"

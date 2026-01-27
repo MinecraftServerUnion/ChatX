@@ -1,6 +1,7 @@
 package dev.onelili.unichat.velocity.message;
 
 import dev.onelili.unichat.velocity.UniChat;
+import dev.onelili.unichat.velocity.util.Config;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
@@ -12,14 +13,22 @@ public class MessageLoader {
     public Map<String, Object> messageConfig;
 
     public static void initialize(){
-        File lang = new File(UniChat.getDataDirectory(), "lang.yml");
+        if(!new File(UniChat.getDataDirectory(), "lang").exists()){
+            String[] langs = {"zh-CN", "en-US"};
+            new File(UniChat.getDataDirectory(), "lang").mkdir();
+            for(String i: langs) {
+                try (InputStream inputStream = UniChat.class.getClassLoader().getResourceAsStream("lang/" + i + ".yml"); OutputStream outputStream = new FileOutputStream(new File(UniChat.getDataDirectory(), "lang/" + i + ".yml"))) {
+                    outputStream.write(Objects.requireNonNull(inputStream).readAllBytes());
+                } catch (Exception e) {
+                    throw new RuntimeException("Cannot save language file: " + e);
+                }
+            }
+        }
+
+        File lang = new File(UniChat.getDataDirectory(), "lang/"+ Config.getString("lang")+".yml");
 
         if(!lang.exists()){
-            try (InputStream inputStream = UniChat.class.getClassLoader().getResourceAsStream("lang.yml"); OutputStream outputStream = new FileOutputStream(lang)) {
-                outputStream.write(Objects.requireNonNull(inputStream).readAllBytes());
-            }catch (Exception e){
-                throw new RuntimeException("Cannot save language file: "+e);
-            }
+            throw new RuntimeException("Language file for "+Config.getString("lang")+" not found!");
         }
         new MessageLoader(lang);
     }
