@@ -41,17 +41,11 @@ jobs:
       run: |
         output="$(find /home/runner/work/UniChat/UniChat/target/ -name "UniChat-*.jar" -type f -printf "%f\n")"
         echo "::set-output name=jarname::$output"
-    - name: Find the correct api JAR
-      if: ${{ github.event_name == 'push' }}
-      id: find-jar-api
-      run: |
-        output="$(find /home/runner/work/UniChat/UniChat/target/ -name "UniChat-*-Api.jar" -type f -printf "%f\n")"
-        echo "::set-output name=jarname::$output"
     - name: Release the build
       if: ${{ github.event_name == 'push' }}
       uses: ncipollo/release-action@v1
       with:
-        artifacts: /home/runner/work/UniChat/UniChat/core/target/${{ steps.find-jar.outputs.jarname }},/home/runner/work/UniChat/UniChat/target/${{ steps.find-jar-api.outputs.jarname }}
+        artifacts: /home/runner/work/UniChat/UniChat/target/${{ steps.find-jar.outputs.jarname }}
         body: ${{ join(github.event.commits.*.message, '\n') }}
         prerelease: true
         name: Dev-build ${{ steps.git-version.outputs.id }}
