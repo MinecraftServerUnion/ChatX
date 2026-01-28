@@ -34,8 +34,8 @@ public class ChatHistoryManager {
     @SneakyThrows
     public static List<ChatMessage> searchHistory(String query, @Nullable String channel, int limit, int offset){
         try (Connection connection = DatabaseHandler.getInstance().getConnection()) {
-            String tmp="SELECT * FROM chathistory WHERE message LIKE '%' || ? || '%'"+(channel!= null ? " AND channel = '"+channel+"'" : "")+" ORDER BY time DESC LIMIT ? OFFSET ?";
-            System.out.println(tmp.replaceFirst("\\?", "'"+query+"'").replaceFirst("\\?", String.valueOf(limit)).replaceFirst("\\?", String.valueOf(offset)));
+//            String tmp="SELECT * FROM chathistory WHERE message LIKE '%' || ? || '%'"+(channel!= null ? " AND channel = '"+channel+"'" : "")+" ORDER BY time DESC LIMIT ? OFFSET ?";
+//            System.out.println(tmp.replaceFirst("\\?", "'"+query+"'").replaceFirst("\\?", String.valueOf(limit)).replaceFirst("\\?", String.valueOf(offset)));
             PreparedStatement st = connection.prepareStatement("SELECT * FROM chathistory WHERE message LIKE '%' || ? || '%'"+(channel!= null ? " AND channel = '"+channel+"'" : "")+" ORDER BY time DESC LIMIT ? OFFSET ?");
             st.setString(1, query);
             st.setInt(2, limit);

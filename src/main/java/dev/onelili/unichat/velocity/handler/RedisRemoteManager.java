@@ -18,11 +18,9 @@ import redis.clients.jedis.JedisPooled;
 import redis.clients.jedis.JedisPubSub;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.TimeUnit;
 
 @Getter
@@ -38,6 +36,7 @@ public class RedisRemoteManager {
     private final ScheduledTask updateTask;
 
     private final Map<String, List<String>> onlinePlayerCache = new ConcurrentHashMap<>();
+    private final Set<String> onlinePlayers = new ConcurrentSkipListSet<>();
 
     public RedisRemoteManager(){
         if(Config.getString("server-name").equals("Velocity"))
@@ -81,9 +80,9 @@ public class RedisRemoteManager {
                     }else if(packetType.equals("msg")) {
                         String target = cont.getString("target");
                         if(UniChat.getProxy().getPlayer(target).isPresent()) {
-                            Component inbound = new Message(Config.getString("message.format-inbound")).add("name", sender+"@"+server).toComponent()
+                            Component inbound = new Message(Config.getString("message.format-inbound")).add("name", sender+"&7@"+server).toComponent()
                                         .append(message),
-                                    thirdparty = new Message(Config.getString("message.format-third-party")).add("sender", sender+"@"+server).add("target", target).toComponent()
+                                    thirdparty = new Message(Config.getString("message.format-third-party")).add("sender", sender+"&7@"+server).add("receiver", target).toComponent()
                                         .append(message);
                             UniChat.getProxy().getPlayer(target).get().sendMessage(inbound);
                             UniChat.getProxy().getConsoleCommandSource().sendMessage(thirdparty);
@@ -130,11 +129,25 @@ public class RedisRemoteManager {
 
     public void updateOnlinePlayers() {
         Map<String, List<String>> newOnlinePlayers = new HashMap<>();
+        Set<String> newOnlinePlayerNames = new HashSet<>();
         for(String i: fetchOnlineServers()) {
-            newOnlinePlayers.put(i, fetchPlayers(i));
+            var ret = fetchPlayers(i);
+            newOnlinePlayers.put(i, ret);
+            newOnlinePlayerNames.addAll(ret);
         }
+        onlinePlayers.clear();
+        onlinePlayers.addAll(newOnlinePlayerNames);
         onlinePlayerCache.clear();
         onlinePlayerCache.putAll(newOnlinePlayers);
+    }
+
+    public String fetchPlayerServer(String player){
+        for(String i: onlinePlayerCache.keySet()) {
+            if(onlinePlayerCache.get(i).contains(player)) {
+                return i;
+            }
+        }
+        return "null";
     }
 
     public void shutdown(){

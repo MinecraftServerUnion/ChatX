@@ -6,27 +6,47 @@ import com.velocitypowered.api.proxy.Player;
 import dev.onelili.unichat.velocity.UniChat;
 import dev.onelili.unichat.velocity.channel.Channel;
 import dev.onelili.unichat.velocity.handler.ChatHistoryManager;
+import dev.onelili.unichat.velocity.handler.RedisRemoteManager;
 import dev.onelili.unichat.velocity.message.Message;
 import dev.onelili.unichat.velocity.module.PatternModule;
 import dev.onelili.unichat.velocity.util.Config;
+import dev.onelili.unichat.velocity.util.MapTree;
 import dev.onelili.unichat.velocity.util.ShitMountainException;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DirectMessageCommand implements SimpleCommand {
-    public static Map<UUID, UUID> lastMessage = new ConcurrentHashMap<>();
+    public static Map<UUID, String> lastMessage = new ConcurrentHashMap<>();
 
     @Override
     public void execute(Invocation invocation) {
-        if(!(invocation.source() instanceof Player sender)) return;
-        Player target;
+        if(!(invocation.source() instanceof Player sender)) {
+            if(Config.getConfigTree().getStringList("message.message-command").contains(invocation.alias())) {
+                if(invocation.arguments().length < 2){
+                    invocation.source().sendMessage(Message.getMessage("command.msg-usage").toComponent());
+                    return;
+                }
+                String target = invocation.arguments()[0];
+                String message = String.join(" ", List.of(invocation.arguments()).subList(1, invocation.arguments().length));
+                Component msg = PatternModule.handleMessage(null, message, false);
+                Component inbound = new Message(Config.getString("message.format-inbound")).add("name", "CONSOLE").toComponent()
+                        .append(msg),
+                        outbound = new Message(Config.getString("message.format-outbound")).add("name", target).toComponent()
+                                .append(msg);
+                if(UniChat.getProxy().getPlayer(target).isPresent()) {
+                    UniChat.getProxy().getPlayer(target).get().sendMessage(inbound);
+                    UniChat.getProxy().getConsoleCommandSource().sendMessage(outbound);
+                }else{
+                    invocation.source().sendMessage(Message.getMessage("command.player-not-found").add("player", target).toComponent());
+                }
+            }
+            return;
+        }
+        String target;
         String message;
 
         if(Config.getConfigTree().getStringList("message.message-command").contains(invocation.alias())) {
@@ -34,13 +54,13 @@ public class DirectMessageCommand implements SimpleCommand {
                 invocation.source().sendMessage(Message.getMessage("command.msg-usage").toComponent());
                 return;
             }
-            var targetOpt = UniChat.getProxy().getPlayer(invocation.arguments()[0]);
-            if (targetOpt.isEmpty()) {
-                invocation.source().sendMessage(Message.getMessage("command.player-not-found").add("player", invocation.arguments()[0]).toComponent());
-                return;
-            }
-            target = targetOpt.get();
-            if (target == sender) {
+//            var targetOpt = UniChat.getProxy().getPlayer(invocation.arguments()[0]);
+//            if (targetOpt.isEmpty()) {
+//                invocation.source().sendMessage(Message.getMessage("command.player-not-found").add("player", invocation.arguments()[0]).toComponent());
+//                return;
+//            }
+            target = invocation.arguments()[0];
+            if (target.equals(sender.getUsername())) {
                 invocation.source().sendMessage(Message.getMessage("command.msg-self").toComponent());
                 return;
             }
@@ -55,7 +75,7 @@ public class DirectMessageCommand implements SimpleCommand {
                 sender.sendMessage(Message.getMessage("command.reply-no-last-message").toComponent());
                 return;
             }
-            target = UniChat.getProxy().getPlayer(lastMessage.get(sender.getUniqueId())).get();
+            target = lastMessage.get(sender.getUniqueId());
             message = String.join(" ", List.of(invocation.arguments()));
         }else{
             throw new ShitMountainException("Unknown command alias "+invocation.alias() +" in DirectMessageCommand");
@@ -63,23 +83,41 @@ public class DirectMessageCommand implements SimpleCommand {
         Component msg = PatternModule.handleMessage(sender, message, false);
         Component inbound = new Message(Config.getString("message.format-inbound")).add("name", sender.getUsername()).toComponent()
                          .append(msg),
-                 outbound = new Message(Config.getString("message.format-outbound")).add("name", target.getUsername()).toComponent()
+                 outbound = new Message(Config.getString("message.format-outbound")).add("name", target).toComponent()
                          .append(msg),
-                 thirdparty = new Message(Config.getString("message.format-third-party")).add("sender", sender.getUsername()).add("target", target.getUsername()).toComponent()
+                 thirdparty = new Message(Config.getString("message.format-third-party")).add("sender", sender.getUsername()).add("receiver", target).toComponent()
                          .append(msg);
-        target.sendMessage(inbound);
+        var targetPlayer = UniChat.getProxy().getPlayer(target);
+        if(targetPlayer.isPresent()) {
+            targetPlayer.get().sendMessage(inbound);
+            lastMessage.put(targetPlayer.get().getUniqueId(), sender.getUsername());
+            ChatHistoryManager.recordMessage(sender.getUsername(), "msg", target, LegacyComponentSerializer.legacyAmpersand().serialize(msg));
+        }else if(RedisRemoteManager.getInstance()!=null && RedisRemoteManager.getInstance().getOnlinePlayers().contains(target)){
+            MapTree cont = new MapTree()
+                    .put("msg", MiniMessage.miniMessage().serialize(msg))
+                    .put("sender", sender.getUsername())
+                    .put("server", Config.getString("server-name"))
+                    .put("type", "msg")
+                    .put("target", target);
+            RedisRemoteManager.getInstance().getJedis().publish("unichat-channel", cont.toJson());
+        }else{
+            invocation.source().sendMessage(Message.getMessage("command.player-not-found").add("player", target).toComponent());
+            return;
+        }
         sender.sendMessage(outbound);
+        lastMessage.put(sender.getUniqueId(), target);
         UniChat.getProxy().getConsoleCommandSource().sendMessage(thirdparty);
-        lastMessage.put(target.getUniqueId(), sender.getUniqueId());
-        lastMessage.put(sender.getUniqueId(), target.getUniqueId());
-
-        ChatHistoryManager.recordMessage(sender.getUsername(), "msg", target.getUsername(), LegacyComponentSerializer.legacyAmpersand().serialize(msg));
     }
     public List<String> suggest(Invocation invocation) {
         if(!(invocation.source() instanceof Player)) return List.of();
         if(Config.getConfigTree().getStringList("message.message-command").contains(invocation.alias())) {
             if(invocation.arguments().length <= 1) {
-                return UniChat.getProxy().getAllPlayers().stream().map(Player::getUsername).toList();
+                Set<String> ret = new HashSet<>(UniChat.getProxy().getAllPlayers().stream().map(Player::getUsername).toList());
+                if(invocation.arguments().length<1||invocation.arguments()[0].isEmpty()){
+                    return new ArrayList<>(ret);
+                }
+                ret.addAll(RedisRemoteManager.getInstance().getOnlinePlayers());
+                return ret.stream().filter(s->s.toLowerCase(Locale.ROOT).startsWith(invocation.arguments()[0].toLowerCase(Locale.ROOT))).toList();
             }
         }
         return List.of();

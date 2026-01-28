@@ -33,7 +33,7 @@ import java.util.UUID;
 @Plugin(
         id = "unichat",
         name = "UniChat",
-        version = "1.0.4",
+        version = "1.2",
         authors = {
                 "oneLiLi",
                 "jason31416"
