@@ -1,4 +1,4 @@
-name: UniChat Build
+name: ChatX Build
 
 on:
   push:
@@ -20,11 +20,11 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn -B package --file pom.xml
-    - name: Upload UniChat
+    - name: Upload ChatX
       uses: actions/upload-artifact@v4.6.2
       with:
-        name: UniChat
-        path: "*/target/UniChat-*.jar"
+        name: ChatX
+        path: "*/target/ChatX-*.jar"
     - uses: dev-drprasad/delete-tag-and-release@v0.2.1
       if: ${{ github.event_name == 'push' }}
       with:
@@ -39,13 +39,13 @@ jobs:
       if: ${{ github.event_name == 'push' }}
       id: find-jar
       run: |
-        output="$(find /home/runner/work/UniChat/UniChat/target/ -name "UniChat-*.jar" -type f -printf "%f\n")"
+        output="$(find /home/runner/work/ChatX/ChatX/target/ -name "ChatX-*.jar" -type f -printf "%f\n")"
         echo "::set-output name=jarname::$output"
     - name: Release the build
       if: ${{ github.event_name == 'push' }}
       uses: ncipollo/release-action@v1
       with:
-        artifacts: /home/runner/work/UniChat/UniChat/target/${{ steps.find-jar.outputs.jarname }}
+        artifacts: /home/runner/work/ChatX/ChatX/target/${{ steps.find-jar.outputs.jarname }}
         body: ${{ join(github.event.commits.*.message, '\n') }}
         prerelease: true
         name: Dev-build ${{ steps.git-version.outputs.id }}

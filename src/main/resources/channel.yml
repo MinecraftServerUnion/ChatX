@@ -32,8 +32,8 @@ staff:
   log-console: true
   commands:
     - staff
-  receive-permission: "unichat.channel.staff"
-  send-permission: "unichat.channel.staff"
+  receive-permission: "chatx.channel.staff"
+  send-permission: "chatx.channel.staff"
 
 #  crossserver:
 #    name: "World"

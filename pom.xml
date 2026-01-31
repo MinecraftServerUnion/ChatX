@@ -4,12 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>dev.onelili</groupId>
-    <artifactId>unichat</artifactId>
+    <groupId>cn.jason31416</groupId>
+    <artifactId>ChatX</artifactId>
     <version>1.2.1</version>
     <packaging>jar</packaging>
 
-    <name>UniChat</name>
+    <name>ChatX</name>
 
     <properties>
         <java.version>17</java.version>
@@ -31,7 +31,7 @@
     </profiles>
 
     <build>
-        <finalName>UniChat-Beta-${project.version}</finalName>
+        <finalName>ChatX-Beta-${project.version}</finalName>
         <defaultGoal>clean package</defaultGoal>
         <resources>
             <resource>
@@ -90,20 +90,16 @@
                             <relocations>
                                 <relocation>
                                     <pattern>redis.clients</pattern>
-                                    <shadedPattern>dev.onelili.unichat.lib.redis</shadedPattern>
+                                    <shadedPattern>cn.jason31416.chatx.lib.redis</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.github.retrooper.packetevents</pattern>
-                                    <shadedPattern>dev.onelili.unichat.lib.packetevents</shadedPattern>
+                                    <shadedPattern>cn.jason31416.chatx.lib.packetevents</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.zaxxer.hikari</pattern>
-                                    <shadedPattern>dev.onelili.unichat.lib.hikari</shadedPattern>
+                                    <shadedPattern>cn.jason31416.chatx.lib.hikari</shadedPattern>
                                 </relocation>
-<!--                                <relocation>-->
-<!--                                    <pattern>com.zaxxer.hikari</pattern>-->
-<!--                                    <shadedPattern>dev.onelili.unichat.lib.hikari</shadedPattern>-->
-<!--                                </relocation>-->
                             </relocations>
                         </configuration>
                     </execution>
