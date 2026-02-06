@@ -39,7 +39,7 @@ public class RedisChannelHandler implements ChannelHandler {
 
     @Override
     public void handle(@Nonnull SimplePlayer player, @Nonnull String message) {
-        if(channel.getRateLimiter()!=null&&!channel.getRateLimiter().invoke(player.getName())){
+        if(channel.getDefaultConfig().getRateLimiter()!=null&&!channel.getDefaultConfig().getRateLimiter().invoke(player.getName())){
             player.sendMessage(Message.getMessage("chat.rate-limited"));
             return;
         }
@@ -53,17 +53,17 @@ public class RedisChannelHandler implements ChannelHandler {
     }
 
     public void receive(String sender, String server, Component cmp) {
-        Message msg = new Message(channel.getChannelConfig().getString("format"));
+        Message msg = new Message(channel.getConfig(server).getFormat());
         msg.add("player", sender);
         msg.add("server", server);
-        msg.add("channel", channel.getDisplayName());
+        msg.add("channel", channel.getConfig(server).getDisplayName());
         Component component = msg.toComponent().append(cmp);
         for(Player receiver : ChatX.getProxy().getAllPlayers()) {
-            if(channel.getReceivePermission() != null&&!receiver.hasPermission(channel.getReceivePermission()))
+            if(channel.getConfig(server).getReceivePermission() != null&&!receiver.hasPermission(channel.getConfig(server).getReceivePermission()))
                 continue;
             receiver.sendMessage(component, ChatType.CHAT.bind(component));
         }
-        if(channel.isLogToConsole())
+        if(channel.getConfig(server).isLogToConsole())
             ChatX.getProxy().getConsoleCommandSource().sendMessage(component);
     }
 }

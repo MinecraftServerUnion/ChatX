@@ -12,4 +12,9 @@ public class Logger {
     public static void error(String message) {
         ChatX.getLogger().error(message);
     }
+    public static void debug(String message) {
+        if(Config.getBoolean("debug")){
+            ChatX.getLogger().info("[DEBUG] "+message);
+        }
+    }
 }

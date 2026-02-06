@@ -7,6 +7,8 @@ import com.velocitypowered.api.proxy.Player;
 import cn.jason31416.chatx.channel.type.serverwide.RoomChannelHandler;
 import cn.jason31416.chatx.message.Message;
 import cn.jason31416.chatx.util.SimplePlayer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 import javax.annotation.Nonnull;
 
@@ -17,7 +19,7 @@ public interface ChannelHandler {
 
     default SimpleCommand getCommand(Channel channel) {
         return invocation -> {
-            if(channel.getSendPermission()!=null&&!invocation.source().hasPermission(channel.getSendPermission())){
+            if(channel.getConfig(invocation.source()).getSendPermission()!=null&&!invocation.source().hasPermission(channel.getConfig(invocation.source()).getSendPermission())){
                 invocation.source().sendMessage(Message.getMessage("chat.no-send-permission").toComponent());
                 return;
             }
@@ -33,20 +35,27 @@ public interface ChannelHandler {
                     invocation.source().sendMessage(Message.getMessage("command.cannot-execute-from-console").toComponent());
                     return;
                 }
-                pl.sendMessage(Message.getMessage("command.joined-channel").add("channel", channel.getDisplayName()).toComponent());
+                pl.sendMessage(Message.getMessage("command.joined-channel").add("channel", channel.getConfig(invocation.source()).getDisplayName()).toComponent());
                 Channel.getPlayerChannels().put(pl.getUniqueId(), channel);
                 RoomChannelHandler.leaveRoom(pl);
             } else {
-                if(channel.isPassthrough()) {
+                if(channel.getConfig(invocation.source()).getHandleMode() != Channel.HandleMode.IGNORE_BACKEND) {
                     invocation.source().sendMessage(Message.getMessage("chat.cannot-command-send-passthrough").toComponent());
                 }else{
                     if (!(invocation.source() instanceof Player pl)) {
                         Channel.handleChat(null, channel, String.join(" ", invocation.arguments()));
                         return;
                     }
+                    if(channel.getConfig(pl).getRateLimiter()!=null&&!channel.getConfig(pl).getRateLimiter().invoke(pl.getUsername())){
+                        pl.sendMessage(Message.getMessage("chat.rate-limited").toComponent());
+                        return;
+                    }
                     Channel.handleChat(pl, channel, String.join(" ", invocation.arguments()));
                 }
             }
         };
+    }
+
+    default void logToConsole(@Nonnull SimplePlayer player, @Nonnull String message){
     }
 }

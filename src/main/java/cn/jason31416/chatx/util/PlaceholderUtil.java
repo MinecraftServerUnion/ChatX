@@ -18,7 +18,7 @@ public class PlaceholderUtil {
     }
 
     public static CompletableFuture<String> replacePlaceholders(String text, Player player){
-        if(isPAPIAvailable){
+        if(isPAPIAvailable && player!=null){
             return PAPIProxyBridgeHook.replacePlaceholders(text, player);
         }else{
             return CompletableFuture.completedFuture(text);

@@ -21,6 +21,7 @@ public class PlayerData {
     @Getter
     private static final Map<UUID, PlayerData> playerDataMap = new ConcurrentHashMap<>();
     private Vector3d position = new Vector3d(0,0,0);
+    private String world = "";
     private int handItem = -1;
     private final Map<Integer, ItemStack> inventory = new ConcurrentHashMap<>(), topInventory = new ConcurrentHashMap<>();
     private ItemStack cursor=null;

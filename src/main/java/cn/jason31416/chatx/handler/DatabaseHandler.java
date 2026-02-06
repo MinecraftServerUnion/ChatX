@@ -42,8 +42,10 @@ public class DatabaseHandler {
         instance.datasource = new HikariDataSource(otherConfig);
 
         try (Connection connection = instance.getConnection()) {
-            connection.prepareStatement("CREATE TABLE IF NOT EXISTS chatx_chathistory (id INTEGER PRIMARY KEY AUTOINCREMENT, channel VARCHAR(255), sender VARCHAR(255), server VARCHAR(255), message TEXT, time BIGINT)").execute();
-            connection.prepareStatement("CREATE TABLE IF NOT EXISTS chatx_mutes (id INTEGER PRIMARY KEY AUTOINCREMENT, player VARCHAR(255), reason TEXT, punisher VARCHAR(255), begin BIGINT, until BIGINT, cancelled BOOLEAN default FALSE)").execute();
+
+            String autoIncrement = database.equals("mysql")?"AUTO_INCREMENT":"AUTOINCREMENT";
+            connection.prepareStatement("CREATE TABLE IF NOT EXISTS chatx_chathistory (id INTEGER PRIMARY KEY "+autoIncrement+", channel VARCHAR(255), sender VARCHAR(255), server VARCHAR(255), message TEXT, time BIGINT)").execute();
+            connection.prepareStatement("CREATE TABLE IF NOT EXISTS chatx_mutes (id INTEGER PRIMARY KEY "+autoIncrement+", player VARCHAR(255), reason TEXT, punisher VARCHAR(255), begin BIGINT, until BIGINT, cancelled BOOLEAN default FALSE)").execute();
 //            connection.prepareStatement("CREATE TABLE IF NOT EXISTS chatfriend (username VARCHAR(255) PRIMARY KEY, )").execute();
         }
     }

@@ -14,6 +14,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Objects;
 
 public abstract class ServerWideChannelHandler implements ChannelHandler {
     public abstract List<SimplePlayer> getReceivers(SimplePlayer sender);
@@ -21,32 +22,30 @@ public abstract class ServerWideChannelHandler implements ChannelHandler {
     public abstract Channel getChannel();
 
     @Override
+    public void logToConsole(@Nonnull SimplePlayer player, @Nonnull String message){
+        PlaceholderUtil.replacePlaceholders(getChannel().getConfig(player.getCurrentServer()).getFormat(), player.getPlayer())
+                .thenAccept(text->{
+                    Component cmp = PatternModule.handleMessage(player.getPlayer(), message, List.of());
+                    Component component = getPrefix(text, player).append(cmp);
+
+                    ChatX.getProxy().getConsoleCommandSource().sendMessage(component);
+                });
+    }
+
+    @Override
     public void handle(@Nonnull SimplePlayer player, @Nonnull String message) {
-        if(getChannel().getRateLimiter()!=null&&!getChannel().getRateLimiter().invoke(player.getName())){
-            player.sendMessage(Message.getMessage("chat.rate-limited"));
-            return;
-        }
-        PlaceholderUtil.replacePlaceholders(getChannel().getChannelConfig().getString("format"), player.getPlayer())
+        PlaceholderUtil.replacePlaceholders(getChannel().getConfig(player.getCurrentServer()).getFormat(), player.getPlayer())
                 .thenAccept(text->{
                     List<SimplePlayer> receivers = getReceivers(player);
                     Component cmp = PatternModule.handleMessage(player.getPlayer(), message, receivers);
                     Component component = getPrefix(text, player).append(cmp);
 
-                    if(!getChannel().isPassthrough() || !getChannel().getChannelConfig().getBoolean("respect-backend", true)){
-                        ChatHistoryManager.recordMessage(player.getName(),
-                                getChannel().getId(),
-                                player.getCurrentServer(),
-                                LegacyComponentSerializer.legacyAmpersand().serialize(cmp));
-
-                        if (getChannel().isLogToConsole())
-                            ChatX.getProxy().getConsoleCommandSource().sendMessage(component);
-                    }
-
                     for(SimplePlayer receiver : receivers) {
-                        if(getChannel().getReceivePermission() != null&&!receiver.hasPermission(getChannel().getReceivePermission()))
+                        if(getChannel().getConfig(player.getCurrentServer()).getReceivePermission() != null&&!receiver.hasPermission(Objects.requireNonNull(getChannel().getConfig(player.getCurrentServer()).getReceivePermission())))
                             continue;
                         receiver.getPlayer().sendMessage(component, ChatType.CHAT.bind(component));
                     }
+                    if(getChannel().getConfig(player.getCurrentServer()).isLogToConsole()) ChatX.getProxy().getConsoleCommandSource().sendMessage(component);
                 });
     }
 }

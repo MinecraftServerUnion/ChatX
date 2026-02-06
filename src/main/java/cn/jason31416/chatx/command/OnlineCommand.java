@@ -31,7 +31,7 @@ public class OnlineCommand implements SimpleCommand {
                     }else{
                         invocation.source().sendMessage(Message.getMessage("command.online.player")
                                 .add("player", invocation.arguments()[1])
-                                .add("servers", String.join(",", fetch))
+                                .add("servers", String.join(", ", fetch))
                                 .toComponent());
                     }
                 }
@@ -52,7 +52,7 @@ public class OnlineCommand implements SimpleCommand {
                     }else{
                         invocation.source().sendMessage(Message.getMessage("command.online.server")
                                 .add("server", invocation.arguments()[1])
-                                .add("players", String.join(",", fetch))
+                                .add("players", String.join(", ", fetch))
                                 .toComponent());
                     }
                 }

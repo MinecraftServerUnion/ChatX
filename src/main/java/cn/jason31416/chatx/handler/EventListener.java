@@ -5,6 +5,7 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
+import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import cn.jason31416.chatx.ChatX;
@@ -13,6 +14,7 @@ import cn.jason31416.chatx.command.DirectMessageCommand;
 import cn.jason31416.chatx.message.Message;
 import cn.jason31416.chatx.module.PatternModule;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 import javax.annotation.Nonnull;
@@ -25,11 +27,11 @@ public class EventListener {
         if(!event.getResult().isAllowed()) return;
         long timemuted = PunishmentHandler.fetchMuted(new SimplePlayer(event.getPlayer()));
         if(timemuted!=-1){
-//            System.out.println(timemuted+" "+System.currentTimeMillis());
             event.getPlayer().sendMessage(Message.getMessage("chat.player-is-muted").add("time_left", TimeUtil.displayMillis(timemuted-System.currentTimeMillis())).toComponent());
             event.setResult(PlayerChatEvent.ChatResult.denied());
             return;
         }
+
         Channel channel;
         String message;
         if (Channel.channelPrefixes.containsKey(event.getMessage().substring(0, 1))) {
@@ -39,53 +41,54 @@ public class EventListener {
             channel = Channel.getPlayerChannel(event.getPlayer());
             message = event.getMessage();
         }
+
         if (channel == null) return;
-        if (event.getPlayer().getCurrentServer().isPresent()) {
-            if (channel.isPassthrough() && Config.getConfigTree().getStringList("unhandled-servers").contains(event.getPlayer().getCurrentServer().get().getServerInfo().getName())){
-                return;
-            }
+        if (event.getPlayer().getCurrentServer().isEmpty()) return;
+
+        String serverid = event.getPlayer().getCurrentServer().get().getServerInfo().getName();
+
+        if (channel.getRestrictedServers().contains(serverid)) {
+            event.setResult(PlayerChatEvent.ChatResult.denied());
+            event.getPlayer().sendMessage(Message.getMessage("chat.channel-declined").toComponent());
+            return;
         }
-        if(event.getPlayer().getCurrentServer().isPresent()){
-            String serverid = event.getPlayer().getCurrentServer().get().getServerInfo().getName();
-            if (channel.getRestrictedServers().contains(serverid)) {
-                event.setResult(PlayerChatEvent.ChatResult.denied());
-                event.getPlayer().sendMessage(Message.getMessage("chat.channel-declined").toComponent());
-                return;
-            }
-        }
-        if(channel.getSendPermission()!=null&&!event.getPlayer().hasPermission(channel.getSendPermission())){
+
+        if(channel.getConfig(serverid).getSendPermission()!=null&&!event.getPlayer().hasPermission(channel.getConfig(serverid).getSendPermission())){
             event.getPlayer().sendMessage(Message.getMessage("chat.no-send-permission").toComponent());
             event.setResult(PlayerChatEvent.ChatResult.denied());
             return;
         }
-        if (!channel.isPassthrough()) event.setResult(PlayerChatEvent.ChatResult.denied());
-        else{
-            if (channel.getChannelConfig().getBoolean("respect-backend", true)) {
-                Component msg = PatternModule.handleMessage(event.getPlayer(), message, List.of());
-                if(channel.isLogToConsole()) {
-                    PlaceholderUtil.replacePlaceholders(channel.getChannelConfig().getString("format"), event.getPlayer())
-                            .thenAccept(text -> {
-                                Component component = new Message(text)
-                                        .add("player", event.getPlayer().getUsername())
-                                        .add("channel", channel.getDisplayName())
-                                        .toComponent().append(msg);
-                                ChatX.getProxy().getConsoleCommandSource().sendMessage(component);
-                            });
-                }
-                ChatHistoryManager.recordMessage(event.getPlayer().getUsername(),
-                        channel.getId(),
-                        event.getPlayer().getCurrentServer().map(ServerConnection::getServerInfo).map(ServerInfo::getName).orElse("Unknown"),
-                        LegacyComponentSerializer.legacyAmpersand().serialize(msg));
-            }
 
-            if(channel.getChannelConfig().getBoolean("respect-backend", true)) {
-                return;
-            }
+        if(channel.getConfig(event.getPlayer()).getRateLimiter()!=null&&!channel.getConfig(event.getPlayer()).getRateLimiter().invoke(event.getPlayer().getUsername())){
+            event.getPlayer().sendMessage(Message.getMessage("chat.rate-limited").toComponent());
+            return;
         }
-        ChatX.getProxy().getScheduler()
-                .buildTask(ChatX.getInstance(),
-                        () -> Channel.handleChat(event.getPlayer(), channel, message))
-                .schedule();
+
+        if(channel.getConfig(serverid).getHandleMode() == Channel.HandleMode.PASSTHROUGH){
+            // Allow the packet to passthrough
+            ChatX.getProxy().getScheduler().buildTask(ChatX.getInstance(), ()->{
+                channel.getHandler().logToConsole(new SimplePlayer(event.getPlayer()), message);
+            }).schedule();
+            return;
+        }else if(channel.getConfig(serverid).getHandleMode() == Channel.HandleMode.NOTIFY_BACKEND){
+            ChatX.getProxy().getScheduler().buildTask(ChatX.getInstance(), ()->{
+                Channel.handleChat(event.getPlayer(), channel, message);
+            }).schedule();
+            // Allow the packet to passthrough. Should be blocked in the ChatPacketListener in the future.
+            return;
+        }else if(channel.getConfig(serverid).getHandleMode() == Channel.HandleMode.RESPECT_BACKEND){
+            // Allow the packet to passthrough
+            return;
+        }else if(channel.getConfig(serverid).getHandleMode() == Channel.HandleMode.IGNORE_BACKEND){
+            ChatX.getProxy().getScheduler().buildTask(ChatX.getInstance(), ()->{
+                Channel.handleChat(event.getPlayer(), channel, message);
+            }).schedule();
+            event.setResult(PlayerChatEvent.ChatResult.denied());
+            return;
+        }else{
+            throw new ShitMountainException("Theres only fking four types of handlemodes.");
+        }
+
     }
     @Subscribe
     public void onPlayerJoin(@Nonnull LoginEvent event){

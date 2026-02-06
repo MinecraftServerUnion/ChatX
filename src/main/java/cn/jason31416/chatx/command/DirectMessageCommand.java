@@ -75,7 +75,7 @@ public class DirectMessageCommand implements SimpleCommand {
                 return;
             }
 
-            if(!lastMessage.containsKey(sender.getUniqueId()) || ChatX.getProxy().getPlayer(lastMessage.get(sender.getUniqueId())).isEmpty()){
+            if(!lastMessage.containsKey(sender.getUniqueId())){
                 sender.sendMessage(Message.getMessage("command.reply-no-last-message").toComponent());
                 return;
             }
@@ -96,7 +96,7 @@ public class DirectMessageCommand implements SimpleCommand {
         if(targetPlayer.isPresent()) {
             targetPlayer.get().sendMessage(inbound);
             lastMessage.put(targetPlayer.get().getUniqueId(), sender.getUsername());
-            ChatHistoryManager.recordMessage(sender.getUsername(), "msg", target, LegacyComponentSerializer.legacyAmpersand().serialize(msg));
+//            ChatHistoryManager.recordMessage(sender.getUsername(), "msg", target, LegacyComponentSerializer.legacyAmpersand().serialize(msg));
         }else if(RedisRemoteManager.getInstance()!=null && RedisRemoteManager.getInstance().getOnlinePlayers().contains(target)){
             MapTree cont = new MapTree()
                     .put("msg", MiniMessage.miniMessage().serialize(msg))

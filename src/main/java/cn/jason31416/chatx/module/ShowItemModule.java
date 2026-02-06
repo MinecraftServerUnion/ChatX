@@ -50,6 +50,9 @@ public class ShowItemModule extends PatternModule {
             nameComponent = item.getComponentOr(ComponentTypes.ITEM_NAME, Component.text("Unknown"));
         }
         if(!item.getEnchantments().isEmpty()) nameComponent = nameComponent.color(NamedTextColor.AQUA);
+        if(item.getAmount()>1){
+            nameComponent = nameComponent.append(Component.text(" x"+item.getAmount()).color(NamedTextColor.AQUA));
+        }
         hoverText = hoverText.append(nameComponent);
         for(Enchantment enchantment : item.getEnchantments()) {
             Component line = Component.empty().color(NamedTextColor.GRAY).append(Component.translatable("enchantment."+enchantment.getType().getName().getNamespace()+"."+enchantment.getType().getName().getKey()))

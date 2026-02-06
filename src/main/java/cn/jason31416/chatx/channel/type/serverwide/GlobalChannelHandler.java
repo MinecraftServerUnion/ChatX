@@ -28,7 +28,7 @@ public class GlobalChannelHandler extends ServerWideChannelHandler {
     public Component getPrefix(String text, SimplePlayer sender) {
         Message msg = new Message(text);
         msg.add("player", sender.getName());
-        msg.add("channel", channel.getDisplayName());
+        msg.add("channel", channel.getConfig(sender.getCurrentServer()).getDisplayName());
         return msg.toComponent();
     }
 

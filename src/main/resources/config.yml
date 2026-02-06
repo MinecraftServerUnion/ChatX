@@ -4,12 +4,6 @@ server-name: "Velocity"
 
 lang: "en-US"
 
-# Players on the following servers will not have their chat messages processed by this plugin when "passthrough" option is enabled!
-# Suitable for cases where a sub-server uses its own independent chat plugin
-unhandled-servers:
-  - "server1"
-  - "server2"
-
 database:
   type: "sqlite" # SQLITE / MYSQL
 
@@ -38,9 +32,6 @@ message: # /msg
     - reply
     - r
 
-chat-history:
-  message-per-page: 10
-
 online-command: # Requires proxy restart
   enabled: true
   command: "online" # /online
@@ -51,3 +42,5 @@ module:
     sound-effect-id: "minecraft:entity.experience_orb.pickup"
     sound-effect-volume: 1 # 0-1
     sound-effect-pitch: 1 # 0.5-2
+
+debug: false # Do not turn on unless instructed

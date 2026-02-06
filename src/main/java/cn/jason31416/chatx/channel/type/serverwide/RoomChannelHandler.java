@@ -52,7 +52,7 @@ public class RoomChannelHandler extends ServerWideChannelHandler {
                     invocation.source().sendMessage(Message.getMessage("command.cannot-execute-from-console").toComponent());
                     return;
                 }
-                if(channel.getSendPermission()!=null&&!pl.hasPermission(channel.getSendPermission())){
+                if(channel.getConfig(pl).getSendPermission()!=null&&!pl.hasPermission(channel.getConfig(pl).getSendPermission())){
                     pl.sendMessage(Message.getMessage("chat.no-send-permission").toComponent());
                     return;
                 }

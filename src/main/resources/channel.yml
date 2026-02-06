@@ -1,16 +1,33 @@
 # Server channel configuration below, you can freely add/delete channels
 # The first channel listed below will be set as the default channel for players when they join
 
-local:
+local: # The ID of the channel. Should be all English characters.
+  # The display name of the channel. Can be any string.
   name: "Local"
+
+  # Type can be: local, global, redis, room
   type: LOCAL
-  passthrough: true # Whether to pass messages back to the backend
-  respect-backend: true # If true, messages will only be displayed when the backend server returns the chat message. Suitable for servers that modify chat events, etc.
-  log-console: true # Whether to print chat messages to console (this option has highest priority in LOCAL type, will process regardless of backend)
+
+  # Handle mode can be: ignore_backend, notify_backend, respect_backend, passthrough
+  # Optional field. Default is ignore_backend.
+  # ignore_backend: Directly process the message & cancelling the packet
+  # notify_backend: Allow the packet to reach the backend, but message will be processed no matter what the backend returns.
+  # respect_backend: Only process the message if the backend returns an unchanged packet of the message.
+  # passthrough: Doesn't process the message at all. (Will still block the message if player doesn't have permission, etc.)
+  handle-mode: respect_backend
+
+  # Whether to print chat messages to console. Will take effect for all handle mode.
+  # Optional field. Default is false
+  log-console: true
+
+  # The format of the message. If the mode is passthrough, this will have no effect.
   format: "&f<click:suggest_command:'@%player%'><%player%></click> &r"
+
+  # The commands to switch to the channel.
   commands:
     - local
     - l
+
 global:
   name: "Global"
   type: GLOBAL
@@ -38,7 +55,7 @@ staff:
   receive-permission: "chatx.channel.staff"
   send-permission: "chatx.channel.staff"
 
-#  crossserver:
+#  crossserver: # Redis in config.yml must be correctly configured for this to work.
 #    name: "World"
 #    type: REDIS
 #    format: "<#47fbeb>[WORLD] %server% &8[&f%player%&8]&f "

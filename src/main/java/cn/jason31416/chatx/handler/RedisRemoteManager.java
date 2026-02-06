@@ -1,5 +1,6 @@
 package cn.jason31416.chatx.handler;
 
+import cn.jason31416.chatx.command.DirectMessageCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.scheduler.ScheduledTask;
 import cn.jason31416.chatx.ChatX;
@@ -83,6 +84,7 @@ public class RedisRemoteManager {
                                         .append(message),
                                     thirdparty = new Message(Config.getString("message.format-third-party")).add("sender", sender+"&7@"+server).add("receiver", target).toComponent()
                                         .append(message);
+                            DirectMessageCommand.lastMessage.put(ChatX.getProxy().getPlayer(target).get().getUniqueId(), sender);
                             ChatX.getProxy().getPlayer(target).get().sendMessage(inbound);
                             if(Config.getConfigTree().getBoolean("message.log-console", false)) {
                                 ChatX.getProxy().getConsoleCommandSource().sendMessage(thirdparty);

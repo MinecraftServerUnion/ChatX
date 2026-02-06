@@ -3,14 +3,17 @@ package cn.jason31416.chatx.channel.type.serverwide;
 import cn.jason31416.chatx.channel.Channel;
 import cn.jason31416.chatx.channel.type.ServerWideChannelHandler;
 import cn.jason31416.chatx.message.Message;
+import cn.jason31416.chatx.util.PlayerData;
 import cn.jason31416.chatx.util.SimplePlayer;
+import com.github.retrooper.packetevents.util.Vector3d;
 import net.kyori.adventure.text.Component;
 
 import java.util.List;
 
-public class LocalChannelHandler extends ServerWideChannelHandler {
+public class ProximityChannelHandler extends ServerWideChannelHandler {
+    // todo: NOT FINISHED. World not fetched.
     Channel channel;
-    public LocalChannelHandler(Channel channel) {
+    public ProximityChannelHandler(Channel channel) {
         this.channel = channel;
     }
 
@@ -19,7 +22,10 @@ public class LocalChannelHandler extends ServerWideChannelHandler {
         if (sender.getCurrentServer()==null) {
             return List.of();
         }
-        return sender.getServerPlayers().stream().map(SimplePlayer::new).toList();
+        Vector3d position = PlayerData.getPlayerData(sender.getPlayer()).getPosition();
+        return sender.getServerPlayers().stream().filter(player->
+                position.distance(PlayerData.getPlayerData(player).getPosition()) <= channel.getRawConfig().getDouble("range",64)
+        ).map(SimplePlayer::new).toList();
     }
 
     @Override

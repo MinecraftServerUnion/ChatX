@@ -18,7 +18,7 @@ public class ChatHistoryCommand implements SimpleCommand {
             invocation.source().sendMessage(Message.getMessage("command.chat-history.channel-header").toComponent());
             for(Channel channel: Channel.getChannels().values()){
                 invocation.source().sendMessage(Message.getMessage("command.chat-history.channel-item")
-                                .add("channel_name", channel.getDisplayName())
+                                .add("channel_name", channel.getDefaultConfig().getDisplayName())
                                 .add("channel_id", channel.getId())
                         .toComponent());
             }
@@ -37,7 +37,7 @@ public class ChatHistoryCommand implements SimpleCommand {
             }
             String keyword = String.join(" ", Stream.of(args).skip(3).toList());
             List<ChatHistoryManager.ChatMessage> chatHistory = ChatHistoryManager.searchHistory(keyword, channelId, Config.getInt("chat-history.message-per-page"), Config.getInt("chat-history.message-per-page")*(page-1));
-            invocation.source().sendMessage(Message.getMessage("command.chat-history.chat-header").add("channel_name", Channel.getChannels().get(channelId).getDisplayName()).toComponent());
+            invocation.source().sendMessage(Message.getMessage("command.chat-history.chat-header").add("channel_name", Channel.getChannels().get(channelId).getDefaultConfig().getDisplayName()).toComponent());
             for(ChatHistoryManager.ChatMessage message: chatHistory) {
                 Date time = new Date(message.time());
                 invocation.source().sendMessage(Message.getMessage("command.chat-history.chat-item")
@@ -94,7 +94,7 @@ public class ChatHistoryCommand implements SimpleCommand {
                 invocation.source().sendMessage(Message.getMessage("command.chat-history.empty").toComponent());
                 return;
             }
-            invocation.source().sendMessage(Message.getMessage("command.chat-history.chat-header").add("channel_id", args[0]).add("channel_name", Channel.getChannels().get(args[0]).getDisplayName()).toComponent());
+            invocation.source().sendMessage(Message.getMessage("command.chat-history.chat-header").add("channel_id", args[0]).add("channel_name", Channel.getChannels().get(args[0]).getDefaultConfig().getDisplayName()).toComponent());
             for(ChatHistoryManager.ChatMessage message: chatHistory) {
                 Date time = new Date(message.time());
                 invocation.source().sendMessage(Message.getMessage("command.chat-history.chat-item")

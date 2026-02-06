@@ -21,8 +21,8 @@ public abstract class PatternModule {
     }
 
     public static void registerDefaults() {
-        modules.put("item", new ShowItemModule());
-        modules.put("i", new ShowItemModule());
+//        modules.put("item", new ShowItemModule());
+//        modules.put("i", new ShowItemModule());
         modules.put("player", new PlayerInfoModule());
     }
 

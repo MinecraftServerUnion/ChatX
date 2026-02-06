@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 @Plugin(
         id = "chatx",
         name = "ChatX",
-        version = "1.2.1",
+        version = "1.2.2",
         authors = {
                 "oneLiLi",
                 "jason31416",
@@ -93,7 +93,9 @@ public class ChatX {
         PacketEvents.getAPI().getSettings().kickOnPacketException(false);
 
         PacketEvents.getAPI().load();
+//        PacketEvents.getAPI().getEventManager().registerListener(new PlayerInventoryListener());
         PacketEvents.getAPI().getEventManager().registerListener(new PacketEventListener());
+        PacketEvents.getAPI().getEventManager().registerListener(new ChatPacketListener());
         PacketEvents.getAPI().init();
 
         PatternModule.registerDefaults();
@@ -104,7 +106,7 @@ public class ChatX {
 
         getProxy().getCommandManager().register(getProxy().getCommandManager().metaBuilder("chatx").build(), new ChatXCommand());
         if(Config.getBoolean("online-command.enabled")) getProxy().getCommandManager().register(getProxy().getCommandManager().metaBuilder(Config.getString("online-command.command")).build(), new OnlineCommand());
-        getProxy().getCommandManager().register(getProxy().getCommandManager().metaBuilder("chathistory").aliases("chathist", "ch").build(), new ChatHistoryCommand());
+//        getProxy().getCommandManager().register(getProxy().getCommandManager().metaBuilder("chathistory").aliases("chathist", "ch").build(), new ChatHistoryCommand());
 
         DatabaseHandler.init();
 
